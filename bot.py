@@ -31,7 +31,7 @@ from storage import Storage
 from systems import SYSTEMS, SYSTEM_ORDER, TOTAL_DAYS
 
 API = "https://api.telegram.org/bot{token}/{method}"
-DB = Storage(config.STATE_FILE.parent / "21day.sqlite3")
+DB = Storage(config.DB_FILE)
 PENDING: dict[int, dict] = {}   # chat_id -> {"action": ..., "day": ...}
 
 
@@ -268,7 +268,7 @@ def send_chart(chat_id: int, style: str):
     if not system:
         return screen_systems(chat_id)
     st = DB.stats(chat_id, system.id)
-    out = config.STATE_FILE.parent / f"chart_{chat_id}_{system.id}.png"
+    out = config.DATA_DIR / f"chart_{chat_id}_{system.id}.png"
     render_chart(system, st["series"], out, style=style)
     caption = (f"{system.emoji} <b>{_esc(system.title)}</b>\n"
                f"<i>{'трейдерский вид' if style == 'trader' else 'стилизованный вид'}"
@@ -396,7 +396,7 @@ def main():
               "или задай переменную окружения.")
         return
     print("21day_system бот запущен. Проект: https://github.com/j0k/21day_system")
-    print("БД:", config.STATE_FILE.parent / "21day.sqlite3",
+    print("БД:", config.DB_FILE,
           "| LLM:", "вкл" if config.LLM_ENABLED else "выкл")
     offset = None
     while True:

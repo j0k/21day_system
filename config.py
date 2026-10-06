@@ -41,8 +41,8 @@ OPENAI_MODEL: str = os.environ.get("OPENAI_MODEL", "gpt-4o-mini").strip()
 
 # --- Хранилище ------------------------------------------------------------
 DATA_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR / "data")))
-STATE_FILE = DATA_DIR / "state.json"
-LOG_FILE = DATA_DIR / "progress.log"
+# Все результаты — в одном файле SQLite.
+DB_FILE = DATA_DIR / "21day.sqlite3"
 
 # Бот умеет работать и без API-ключа.
 LLM_ENABLED: bool = bool(OPENAI_API_KEY)
