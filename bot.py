@@ -311,15 +311,21 @@ def on_callback(cb: dict):
     if data.startswith("mark:"):
         d = int(data.split(":", 1)[1])
         user_obj, system = _user_and_system(chat_id)
+        if not system:
+            return screen_systems(chat_id, message_id)
         DB.set_done(chat_id, system.id, d, True)
         return screen_today(chat_id, message_id)
     if data.startswith("unmark:"):
         d = int(data.split(":", 1)[1])
         user_obj, system = _user_and_system(chat_id)
+        if not system:
+            return screen_systems(chat_id, message_id)
         DB.set_done(chat_id, system.id, d, False)
         return screen_today(chat_id, message_id)
     if data.startswith("note:"):
         d = int(data.split(":", 1)[1])
+        if not _user_and_system(chat_id)[1]:
+            return screen_systems(chat_id, message_id)
         PENDING[chat_id] = {"action": "note", "day": d}
         edit(chat_id, message_id,
              f"✍️ Напиши короткую заметку по дню {d} (1–3 строки) и отправь "
@@ -328,6 +334,8 @@ def on_callback(cb: dict):
         return
     if data == "advise":
         user_obj, system = _user_and_system(chat_id)
+        if not system:
+            return screen_systems(chat_id, message_id)
         st = DB.stats(chat_id, system.id)
         d = next((x for x in range(1, TOTAL_DAYS + 1) if not st["series"][x - 1]), 1)
         day = system.day(d)
