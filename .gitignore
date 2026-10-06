@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+data/
+*.sqlite3
+chart_*.png
