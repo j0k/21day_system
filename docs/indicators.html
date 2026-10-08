@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Индикаторы прогресса — 21day_system</title>
+<meta name="description" content="Как 21day_system считает прогресс: RSI-прогресс, ADX-тренд, ATR-темп, пейс за 7 дней и прогноз финиша — по мотивам индикаторов Дж. Уэллса Уайлдера.">
+<meta name="theme-color" content="#06080f">
+<link rel="icon" href="icon.png">
+<style>
+  :root{
+    --bg:#06080f; --card:#0e1322; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f;
+    --green:#37e6a4; --blue:#5aa2ff; --violet:#8b7cff; --orange:#ffb454; --accent:#6b8cff;
+    --radius:20px; --maxw:900px; --nav-h:64px;
+    --mono:"Consolas",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;
+    -webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(760px 420px at 80% -10%,rgba(107,140,255,.14),transparent 60%),
+      radial-gradient(700px 420px at 10% 0%,rgba(55,230,164,.09),transparent 60%)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{letter-spacing:-.025em}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+
+  nav{position:sticky;top:0;z-index:40;height:var(--nav-h);display:flex;align-items:center;
+    background:rgba(6,8,15,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:14px}
+  .brand{display:flex;align-items:center;gap:.6rem;font-weight:700}
+  .brand img{width:28px;height:28px;border-radius:8px}
+  nav .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  nav .back:hover{color:var(--text)}
+
+  header{padding:60px 0 12px}
+  header .eyebrow{margin-bottom:10px}
+  h1{font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1.1;margin:0 0 .8rem}
+  .lede{color:var(--muted);font-size:1.06rem;max-width:640px;margin:0}
+
+  main{padding:20px 0 80px}
+  h2{font-size:1.15rem;margin:52px 0 16px}
+
+  /* «финансовая» таблица */
+  .fin{font-family:var(--mono);font-size:.86rem;color:#cfdaf2;
+    border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:var(--card)}
+  .fin .hd,.fin .r{display:grid;grid-template-columns:1fr 76px 120px;gap:14px;align-items:center}
+  .fin .hd{color:var(--dim);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:4px}
+  .fin .r{padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
+  .fin .r:last-child{border-bottom:none}
+  .fin .r .k{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fin .r .k small{color:var(--dim);font-family:var(--sans);margin-left:8px}
+  .fin .r .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+  .fin .r .bar,.fin .hd .bar{display:block;height:9px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .fin .r .bar i{display:block;height:100%;border-radius:99px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{border:1px solid var(--line);border-radius:var(--radius);padding:22px;background:var(--card)}
+  .card .ic{font-size:1.3rem;margin-bottom:10px}
+  .card h3{margin:.1rem 0 .5rem;font-size:1.06rem}
+  .card p{margin:0;color:var(--muted);font-size:.93rem}
+  .card .formula{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:.78rem;
+    color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:.3rem .6rem;background:rgba(255,255,255,.03)}
+  .zones{margin-top:14px;font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.9}
+  .zones b{color:var(--text)}
+  .note{margin-top:22px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;
+    background:rgba(255,255,255,.02);color:var(--muted);font-size:.95rem}
+  .note b{color:var(--text)}
+
+  footer{padding:40px 0 60px;color:var(--dim);font-size:.9rem;border-top:1px solid var(--line)}
+  footer .wrap{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--muted)} footer a:hover{color:var(--text)}
+
+  @media(max-width:880px){
+    .grid{grid-template-columns:1fr}
+    .fin .hd,.fin .r{grid-template-columns:1fr 68px 74px;gap:10px}
+    .fin .r .k small{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.png" alt=""> 21day_system</a>
+    <a class="back" href="index.html">&larr; На главную</a>
+  </div>
+</nav>
+
+<header class="wrap">
+  <div class="eyebrow">Как это считается</div>
+  <h1>Индикаторы прогресса</h1>
+  <p class="lede">Пять показателей, которые бот считает каждый день. В основе — индикаторы <b style="color:var(--text)">Дж. Уэллса Уайлдера</b> (RSI, ADX, ATR), применённые к последовательности отметок «сделано / пропущено» — то есть к ряду нулей и единиц, а не к сумме дней.</p>
+</header>
+
+<main class="wrap">
+
+  <div class="fin" style="margin-top:26px">
+    <div class="hd"><span>показатель</span><span style="text-align:right">знач.</span><span>шкала</span></div>
+    <div class="r"><span class="k">RSI-прогресс</span><span class="v">58.0</span><span class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span></div>
+    <div class="r"><span class="k">ADX-тренд</span><span class="v">41.2</span><span class="bar"><i style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span></div>
+    <div class="r"><span class="k">ATR-темп</span><span class="v">0.31</span><span class="bar"><i style="width:31%;background:rgba(255,255,255,.22)"></i></span></div>
+    <div class="r"><span class="k">пейс 7 дней</span><span class="v">71%</span><span class="bar"><i style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span></div>
+    <div class="r"><span class="k">прогноз финиша</span><span class="v">день ~21</span><span class="bar"><i style="width:60%;background:rgba(255,255,255,.14)"></i></span></div>
+  </div>
+
+  <h2>Три индикатора Уайлдера</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="ic">📊</div>
+      <h3>RSI-прогресс <small style="color:var(--dim);font-family:var(--mono)">58.0</small></h3>
+      <p>Импульс практики: как успехи соотносятся с пропусками за последний период. Высокий — практика идёт ровно, низкий — много пропусков подряд.</p>
+      <span class="formula">RSI = 100 − 100 / (1 + средний_рост / среднее_падение)</span>
+      <div class="zones"><b>&lt; 30</b> — срыв &nbsp;·&nbsp; <b>30–70</b> — норма &nbsp;·&nbsp; <b>&gt; 70</b> — ровно</div>
+    </div>
+    <div class="card">
+      <div class="ic">📐</div>
+      <h3>ADX-тренд <small style="color:var(--dim);font-family:var(--mono)">41.2</small></h3>
+      <p>Сила и устойчивость серии. Показывает не «сколько сделано», а насколько ровно идёт тренд: высокое значение — ритм держится, низкое — отметки рваные.</p>
+      <span class="formula">ADX = среднее|+DI − −DI| / (+DI + −DI) × 100</span>
+      <div class="zones"><b>&lt; 20</b> — нет тренда &nbsp;·&nbsp; <b>20–40</b> — формируется &nbsp;·&nbsp; <b>&gt; 40</b> — сильный</div>
+    </div>
+    <div class="card">
+      <div class="ic">🌊</div>
+      <h3>ATR-темп <small style="color:var(--dim);font-family:var(--mono)">0.31</small></h3>
+      <p>Волатильность темпа: насколько рвано идут отметки. Низкий — ровный ритм каждый день, высокий — качели «сделал / пропустил».</p>
+      <span class="formula">ATR = среднее сглаживание |отметкаₜ − отметкаₜ₋₁|</span>
+      <div class="zones"><b>≈ 0</b> — стабильно &nbsp;·&nbsp; <b>&gt; 0.5</b> — рвано</div>
+    </div>
+  </div>
+
+  <h2>Два практических показателя</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <div class="ic">⏱</div>
+      <h3>Пейс 7 дней <small style="color:var(--dim);font-family:var(--mono)">71%</small></h3>
+      <p>Доля выполнения за последнюю неделю. Простой ответ на вопрос «держу ли я ритм прямо сейчас» — без учёта прошлых заслуг.</p>
+      <span class="formula">пейс = отметок за 7 дней / 7 × 100%</span>
+    </div>
+    <div class="card">
+      <div class="ic">🎯</div>
+      <h3>Прогноз финиша <small style="color:var(--dim);font-family:var(--mono)">день ~21</small></h3>
+      <p>Ожидаемый день завершения по среднему темпу прохождения. Если темп упадёт — прогноз честно сдвинется вправо.</p>
+      <span class="formula">финиш = выполнено + остаток / средний_темп</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Почему по 0/1, а не по накопленному прогрессу.</b> Если считать индикаторы по сумме выполненных дней, они почти всегда показывали бы «100» — рост неизбежен по построению. Мы применяем формулы Уайлдера к ряду отметок «день сделан = 1, пропущен = 0», поэтому RSI, ADX и ATR действительно отражают ритм, а не размер пройденного пути.
+  </div>
+
+  <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+    <a class="card" href="index.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600">&larr; На главную</a>
+    <a class="card" href="https://github.com/j0k/21day_system/blob/main/indicators.py" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600">indicators.py на GitHub &rarr;</a>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© <span id="year"></span> 21day_system · <a href="https://juri-konoplev.pro/" target="_blank" rel="noopener">juri-konoplev.pro</a></div>
+    <div><a href="index.html">Главная</a> · <a href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Telegram</a></div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
