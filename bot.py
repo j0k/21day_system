@@ -29,9 +29,11 @@ from indicators import compute, indicator_block
 from llm import ask as llm_ask
 from llm import chat_dev as llm_chat_dev
 from md import to_html as md_to_html
+from news import news_text
 from radar import render_radar
 from storage import Storage
 from systems import SYSTEMS, SYSTEM_ORDER, TOTAL_DAYS
+import version
 
 API = "https://api.telegram.org/bot{token}/{method}"
 DB = Storage(config.DB_FILE)
@@ -866,6 +868,21 @@ def on_message(msg: dict):
         PENDING.pop(chat_id, None)
         DEV_ON.discard(uid)
         return send(chat_id, "Ок, отменено.", kb_back_menu())
+    if text.startswith("/version"):
+        return send(chat_id,
+                    f"🏷 <b>21day_system {version.version_str()}</b>\n"
+                    f"ядро {version.core_of()} · канал {version.CHANNEL}\n"
+                    f"дата {version.VERSION_DATE} · сборка "
+                    f"{version.build_time()}\n"
+                    f"<a href=\"https://github.com/j0k/21day_system\">"
+                    f"репозиторий</a> · "
+                    f"<a href=\"https://juri-konoplev.pro/21day_system/\">"
+                    f"страница проекта</a>",
+                    kb_back_menu())
+    if text.startswith("/news"):
+        arg = text.split(maxsplit=1)[1] if len(text.split()) > 1 else ""
+        return send(chat_id, _esc(news_text(arg, current=version.CORE)),
+                    kb_back_menu())
     if text.startswith("/help"):
         return send(chat_id,
                     "<b>Команды</b>\n"
@@ -879,9 +896,12 @@ def on_message(msg: dict):
                     "/profile — профиль и видимость (публичный/приватный)\n"
                     "/admin — админ-панель (только для администратора)\n"
                     "/dev — чат с LLM о функционале (только админ)\n"
+                    "/version — версия бота\n"
+                    "/news [list] — что нового в версиях\n"
                     "/cancel — отменить ввод\n\n"
                     "Днём можно отметить выполнение кнопкой и добавить заметку.\n"
-                    "Проект: https://github.com/j0k/21day_system",
+                    f"Проект: https://github.com/j0k/21day_system · "
+                    f"{version.version_str()}",
                     kb_back_menu())
     user_obj, system = _user_and_system(chat_id)
     # Свободный чат с LLM (админ): любой текст уходит в диалог.
@@ -905,7 +925,8 @@ def main():
         print("Нет TELEGRAM_BOT_TOKEN. Создай .env по образцу .env.example "
               "или задай переменную окружения.")
         return
-    print("21day_system бот запущен. Проект: https://github.com/j0k/21day_system")
+    print(f"21day_system {version.VERSION} бот запущен. "
+          f"Проект: https://github.com/j0k/21day_system")
     print("БД:", config.DB_FILE,
           "| LLM:", "вкл" if config.LLM_ENABLED else "выкл")
     if config.LLM_ENABLED:
