@@ -1,17 +1,28 @@
-# 21day_system
+<h1 align="center">21day_system</h1>
 
-![21day_system icon](icon.svg)
+<p align="center">
+  <img src="icon.png" width="150" alt="Иконка 21day_system">
+</p>
+
+<p align="center">
+  <b>Три 21-дневные микро-практики в одном Telegram-боте</b><br>
+  навыки · режим дня и дисциплина · сон
+</p>
+
+<p align="center">
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0--Beta-2ea043" alt="версия 1.0-Beta"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
+  <a href="https://matplotlib.org/"><img src="https://img.shields.io/badge/deps-stdlib%20%2B%20matplotlib-2f8f4e" alt="зависимости"></a>
+  <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white" alt="SQLite"></a>
+  <a href="https://core.telegram.org/bots"><img src="https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white" alt="Telegram Bot"></a>
+  <a href="SETUP.md"><img src="https://img.shields.io/badge/docs-readme%20%2B%20setup-1f8f8a" alt="документация"></a>
+</p>
+
+<p align="center">
+  🌐 Язык: <b>Русский</b> · <a href="README.md">English</a>
+</p>
 
 > Telegram-бот трёх 21-дневных систем микро-практики: **навыки**, **режим дня** и **сон**.
-
-[![Version](https://img.shields.io/badge/version-1.0--Beta-2ea043)](CHANGELOG.md)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Dependencies](https://img.shields.io/badge/deps-stdlib%20%2B%20matplotlib-2f8f4e)](https://matplotlib.org/)
-[![Storage](https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)](https://core.telegram.org/bots)
-[![Docs](https://img.shields.io/badge/docs-readme%20%2B%20setup-1f8f8a)](SETUP.md)
-
-**🌐 Язык:** **Русский** · [English](README.md)
 
 ---
 
@@ -58,10 +69,10 @@
 - **Выбор системы кнопкой** в Telegram, смена в любой момент.
 - **Отметки по дням** — выполнено / пропущено, плюс короткие заметки.
 - **Индикаторы прогресса видны всегда** — RSI / ADX / ATR по мотивам Welles Wilder, пейс за 7 дней и прогноз финиша.
-- **Три графика**:
+- **Три графика** одной командой `/chart`:
   - `📈` трейдерский — тёмная тема, линия прогресса + панели RSI/ADX/темпа;
   - `🎨` стилизованный — светлая пастельная тема;
-  - `📡` **радар TCAS** — метки целевых показателей сближаются с центром по мере приближения к цели.
+  - `📡` **радар прогресса** — метки целей сближаются с центром по мере приближения к цели.
 - **Участники и лидерборд** — счётчик участников и топ‑3 прямо на экране выбора системы; отдельные экраны «👥 Участники» и «🏆 Лидеры» с фильтром по системе.
 - **Профиль и приватность** — можно стать **публичным** (имя видно в лидерборде) или остаться **приватным** (`Private User`).
 - **Админка** — сводка, список пользователей, карточка пользователя, журнал событий, рассылка.
@@ -225,7 +236,7 @@ Changelog собирается из git-истории: тема каждого 
 ├── storage.py        # SQLite-хранилище (users, progress, log) + миграции
 ├── indicators.py     # RSI / ADX / ATR в стиле Welles Wilder
 ├── graph.py          # графики: трейдерский и стилизованный
-├── radar.py          # радар прогресса в духе TCAS
+├── radar.py          # радар прогресса (метки целей сходятся к центру)
 ├── llm.py            # необязательный LLM-советник и чат о функционале
 ├── md.py             # Markdown → Telegram-HTML
 ├── data/             # 21day.sqlite3 (gitignored)
@@ -268,6 +279,5 @@ python demo_progress.py     # что бот присылает по прогре
 ## Благодарности
 
 - Идеи индикаторов — **J. Welles Wilder Jr.** (RSI, ATR, ADX).
-- Радар — по мотивам дисплея **TCAS**.
 - Схема версионирования — по мотивам **Codellake**.
 - Проект и оформление: [juri-konoplev.pro](https://juri-konoplev.pro/).

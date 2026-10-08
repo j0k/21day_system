@@ -23,7 +23,7 @@
   <rect x="10" y="10" width="492" height="492" rx="103" ry="103"
         fill="none" stroke="#1d3440" stroke-width="2"/>
 
-  <!-- радарные окружности (мотив TCAS) -->
+  <!-- радарные окружности -->
   <g fill="none" stroke="#1f4a55" stroke-width="2">
     <circle cx="256" cy="256" r="118" opacity="0.55"/>
     <circle cx="256" cy="256" r="166" opacity="0.35"/>

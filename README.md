@@ -1,17 +1,28 @@
-# 21day_system
+<h1 align="center">21day_system</h1>
 
-![21day_system icon](icon.svg)
+<p align="center">
+  <img src="icon.png" width="150" alt="21day_system icon">
+</p>
+
+<p align="center">
+  <b>Three 21-day micro-practices in one Telegram bot</b><br>
+  skills · daily routine &amp; discipline · sleep
+</p>
+
+<p align="center">
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0--Beta-2ea043" alt="version 1.0-Beta"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
+  <a href="https://matplotlib.org/"><img src="https://img.shields.io/badge/deps-stdlib%20%2B%20matplotlib-2f8f4e" alt="deps"></a>
+  <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white" alt="SQLite"></a>
+  <a href="https://core.telegram.org/bots"><img src="https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white" alt="Telegram Bot"></a>
+  <a href="SETUP.md"><img src="https://img.shields.io/badge/docs-readme%20%2B%20setup-1f8f8a" alt="docs"></a>
+</p>
+
+<p align="center">
+  🌐 Language: <b>English</b> · <a href="README_RU.md">Русский</a>
+</p>
 
 > A Telegram bot that runs three 21-day micro-practice systems: **skills**, **daily routine** and **sleep**.
-
-[![Version](https://img.shields.io/badge/version-1.0--Beta-2ea043)](CHANGELOG.md)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Dependencies](https://img.shields.io/badge/deps-stdlib%20%2B%20matplotlib-2f8f4e)](https://matplotlib.org/)
-[![Storage](https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)](https://core.telegram.org/bots)
-[![Docs](https://img.shields.io/badge/docs-readme%20%2B%20setup-1f8f8a)](SETUP.md)
-
-**🌐 Language:** **English** · [Русский](README_RU.md)
 
 ---
 
@@ -58,10 +69,10 @@ Each system is split into three weeks: **notice → keep the rhythm → reinforc
 - **Pick a system with a button** in Telegram, switch anytime.
 - **Daily check-offs** — done / missed, plus short notes.
 - **Progress indicators always visible** — RSI / ADX / ATR in the spirit of Welles Wilder, 7-day pace and finish projection.
-- **Three charts**:
+- **Three charts** with one command `/chart`:
   - `📈` trader style — dark theme, progress line + RSI/ADX/pace panels;
   - `🎨` styled — light pastel theme;
-  - `📡` **TCAS radar** — target blips move toward the center as you approach the goal.
+  - `📡` **progress radar** — target markers converge toward the center as you approach the goal.
 - **Participants and leaderboard** — a participant counter and top‑3 right on the system-select screen; dedicated "👥 Participants" and "🏆 Leaders" screens with a per-system filter.
 - **Profile and privacy** — go **public** (name shown in the leaderboard) or stay **private** (`Private User`).
 - **Admin panel** — overview, user list, user card, event log, broadcast.
@@ -225,7 +236,7 @@ Free-form dialogue with the model about the project: ideas, decisions, code snip
 ├── storage.py        # SQLite storage (users, progress, log) + migrations
 ├── indicators.py     # RSI / ADX / ATR in the spirit of Welles Wilder
 ├── graph.py          # charts: trader and styled
-├── radar.py          # TCAS-style progress radar
+├── radar.py          # progress radar (goal markers converging to the center)
 ├── llm.py            # optional LLM advisor and project chat
 ├── md.py             # Markdown → Telegram HTML
 ├── data/             # 21day.sqlite3 (gitignored)
@@ -268,6 +279,5 @@ python demo_progress.py     # what the bot sends on progress
 ## Credits
 
 - Indicator ideas — **J. Welles Wilder Jr.** (RSI, ATR, ADX).
-- Radar — inspired by the **TCAS** display.
 - Versioning scheme — inspired by **Codellake**.
 - Project and design: [juri-konoplev.pro](https://juri-konoplev.pro/).

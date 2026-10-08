@@ -8,7 +8,7 @@
 * Первый, кто написал боту, выбирает одну из трёх систем кнопкой.
 * Прогресс пишется в файл SQLite (data/21day.sqlite3).
 * Индикаторы прогресса (RSI/ADX/ATR по мотивам Welles Wilder) видны всегда.
-* График прогресса: /chart — «трейдерский», стилизованный или радар TCAS.
+* График прогресса: /chart — «трейдерский», стилизованный или радар.
 * API-ключ (OpenAI-совместимый) необязателен: без него — офлайн-совет.
 
 Проект: https://github.com/j0k/21day_system
@@ -176,7 +176,7 @@ def kb_main(system):
          {"text": "🗓 Неделя 3", "callback_data": "week:3"}],
         [{"text": "📈 График", "callback_data": "chart:trader"},
          {"text": "🎨 Стиль", "callback_data": "chart:styled"}],
-        [{"text": "📡 Радар TCAS", "callback_data": "chart:radar"}],
+        [{"text": "📡 Радар", "callback_data": "chart:radar"}],
         [{"text": "💡 Совет", "callback_data": "advise"},
          {"text": "🙍 Профиль", "callback_data": "profile"}],
         [{"text": "🏆 Лидеры", "callback_data": "board"},
@@ -326,7 +326,7 @@ def _project_context() -> str:
         f"Пользователей: {over['users']}, отметок: {over['marks']}.",
         "Файлы: bot.py (экраны/диалог), storage.py (SQLite), systems.py "
         "(данные 21 дня), indicators.py (RSI/ADX/ATR по Уайлдеру), "
-        "graph.py (2 графика), radar.py (радар TCAS), llm.py, config.py.",
+        "graph.py (2 графика), radar.py (радар), llm.py, config.py.",
         "Есть: выбор системы кнопкой, отметки/заметки, индикаторы, графики "
         "(trader/styled/radar), участники, лидерборд, профиль "
         "(публичный/приватный), админка (пользователи, журнал, рассылка).",
@@ -844,7 +844,7 @@ def on_message(msg: dict):
             arg = parts[1].lower()
             if arg in ("styled", "style", "стиль"):
                 style = "styled"
-            elif arg in ("radar", "радар", "tcas"):
+            elif arg in ("radar", "радар"):
                 style = "radar"
         return send_chart(chat_id, style)
     if text.startswith("/systems"):
