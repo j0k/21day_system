@@ -78,7 +78,7 @@ DB_FILE = DATA_DIR / "21day.sqlite3"
 # команда /admin. По умолчанию — владелец проекта.
 ADMIN_IDS: set[int] = {
     int(x) for x in _first_env("ADMIN_IDS",
-                               default="52160369,432922856")
+                               default="52160369")
     .replace(";", ",").split(",") if x.strip().isdigit()
 }
 
