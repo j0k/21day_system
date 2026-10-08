@@ -50,9 +50,24 @@ python bot.py
 | Переменная | Обязательна | Назначение |
 |---|---|---|
 | `TELEGRAM_BOT_TOKEN` | да | токен от @BotFather |
-| `OPENAI_API_KEY` | нет | API-ключ (OpenAI-совместимый) для советов |
-| `OPENAI_BASE_URL` | нет | базовый URL API (по умолчанию `https://api.openai.com/v1`) |
+| `OPENAI_API_KEY` | нет | API-ключ OpenAI напрямую |
+| `ROUTERAI_API_KEY` | нет | API-ключ RouterAI (base_url подставляется сам) |
+| `LLM_API_KEY` | нет | ключ любого OpenAI-совместимого сервиса |
+| `OPENAI_BASE_URL` | нет | явное переопределение базового URL |
 | `OPENAI_MODEL` | нет | модель (по умолчанию `gpt-4o-mini`) |
+
+Ключ можно задать **и в `.env`, и через переменные окружения Windows** —
+бот берёт первое непустое из `OPENAI_API_KEY` / `ROUTERAI_API_KEY` /
+`LLM_API_KEY`. Если задан `ROUTERAI_API_KEY`, базовый URL автоматически
+становится `https://routerai.ru/api/v1`, а модель — с префиксом провайдера
+(`openai/gpt-4o-mini`); модель можно переопределить (`ROUTERAI_MODEL`).
+
+Пример настройки через переменную окружения:
+
+```powershell
+[Environment]::SetEnvironmentVariable("ROUTERAI_API_KEY", "ваш_ключ", "User")
+# затем перезапустите терминал и запустите: python bot.py
+```
 
 **Без API-ключа бот полностью работает** — советник отвечает офлайн,
 сетевые вызовы не делаются.

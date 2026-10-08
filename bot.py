@@ -406,6 +406,12 @@ def main():
     print("21day_system бот запущен. Проект: https://github.com/j0k/21day_system")
     print("БД:", config.DB_FILE,
           "| LLM:", "вкл" if config.LLM_ENABLED else "выкл")
+    if config.LLM_ENABLED:
+        print("   ключ:", config.LLM_KEY_NAME,
+              "| base_url:", config.OPENAI_BASE_URL,
+              "| модель:", config.OPENAI_MODEL)
+    else:
+        print("   LLM выключен (нет ключа) — работает офлайн-совет.")
     offset = None
     while True:
         params = {"timeout": config.POLL_TIMEOUT}
