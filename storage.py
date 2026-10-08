@@ -70,6 +70,14 @@ class Storage:
         self._db = sqlite3.connect(str(self.path), check_same_thread=False)
         self._db.row_factory = sqlite3.Row
         with self._lock:
+            # WAL ускоряет запись примерно втрое и позволяет читать во время
+            # записи; busy_timeout спасает от «database is locked».
+            try:
+                self._db.execute("PRAGMA journal_mode=WAL")
+                self._db.execute("PRAGMA synchronous=NORMAL")
+                self._db.execute("PRAGMA busy_timeout=5000")
+            except sqlite3.DatabaseError:
+                pass
             self._db.executescript(_SCHEMA)
             self._db.commit()
 
