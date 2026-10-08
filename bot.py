@@ -8,7 +8,7 @@
 * Первый, кто написал боту, выбирает одну из трёх систем кнопкой.
 * Прогресс пишется в файл SQLite (data/21day.sqlite3).
 * Индикаторы прогресса (RSI/ADX/ATR по мотивам Welles Wilder) видны всегда.
-* График прогресса: /chart — «трейдерский» или стилизованный.
+* График прогресса: /chart — «трейдерский», стилизованный или радар TCAS.
 * API-ключ (OpenAI-совместимый) необязателен: без него — офлайн-совет.
 
 Проект: https://github.com/j0k/21day_system
@@ -27,6 +27,7 @@ import config
 from graph import render as render_chart
 from indicators import compute, indicator_block
 from llm import ask as llm_ask
+from radar import render_radar
 from storage import Storage
 from systems import SYSTEMS, SYSTEM_ORDER, TOTAL_DAYS
 
@@ -126,6 +127,7 @@ def kb_main(system):
          {"text": "🗓 Неделя 3", "callback_data": "week:3"}],
         [{"text": "📈 График", "callback_data": "chart:trader"},
          {"text": "🎨 Стиль", "callback_data": "chart:styled"}],
+        [{"text": "📡 Радар TCAS", "callback_data": "chart:radar"}],
         [{"text": "💡 Совет", "callback_data": "advise"},
          {"text": "🔀 Сменить систему", "callback_data": "systems"}],
     ]}
@@ -268,11 +270,16 @@ def send_chart(chat_id: int, style: str):
     if not system:
         return screen_systems(chat_id)
     st = DB.stats(chat_id, system.id)
-    out = config.DATA_DIR / f"chart_{chat_id}_{system.id}.png"
-    render_chart(system, st["series"], out, style=style)
-    caption = (f"{system.emoji} <b>{_esc(system.title)}</b>\n"
-               f"<i>{'трейдерский вид' if style == 'trader' else 'стилизованный вид'}"
-               f" · индикаторы Welles Wilder</i>")
+    out = config.DATA_DIR / f"chart_{chat_id}_{system.id}_{style}.png"
+    if style == "radar":
+        render_radar(system, st["series"], st, out)
+        caption = (f"{system.emoji} <b>{_esc(system.title)}</b>\n"
+                   f"<i>радар прогресса · приближение к целевым показателям</i>")
+    else:
+        render_chart(system, st["series"], out, style=style)
+        caption = (f"{system.emoji} <b>{_esc(system.title)}</b>\n"
+                   f"<i>{'трейдерский вид' if style == 'trader' else 'стилизованный вид'}"
+                   f" · индикаторы Welles Wilder</i>")
     _call_photo(chat_id, str(out), caption, kb_main(system))
 
 
@@ -371,8 +378,13 @@ def on_message(msg: dict):
         return screen_progress(chat_id)
     if text.startswith("/chart"):
         parts = text.split()
-        style = "styled" if len(parts) > 1 and parts[1] in ("styled", "style",
-                                                             "стиль") else "trader"
+        style = "trader"
+        if len(parts) > 1:
+            arg = parts[1].lower()
+            if arg in ("styled", "style", "стиль"):
+                style = "styled"
+            elif arg in ("radar", "радар", "tcas"):
+                style = "radar"
         return send_chart(chat_id, style)
     if text.startswith("/systems"):
         return screen_systems(chat_id)
@@ -385,7 +397,7 @@ def on_message(msg: dict):
                     "/start — выбрать систему\n"
                     "/today — текущий день\n"
                     "/progress — прогресс и индикаторы\n"
-                    "/chart [styled] — график прогресса\n"
+                    "/chart [styled|radar] — график прогресса\n"
                     "/systems — сменить систему\n"
                     "/cancel — отменить ввод\n\n"
                     "Днём можно отметить выполнение кнопкой и добавить заметку.\n"

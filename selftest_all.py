@@ -9,6 +9,7 @@ os.environ["DATA_DIR"] = tempfile.mkdtemp(prefix="21day_all_")
 
 from graph import render            # noqa: E402
 from indicators import compute      # noqa: E402
+from radar import render_radar      # noqa: E402
 from storage import Storage         # noqa: E402
 from systems import SYSTEMS, SYSTEM_ORDER, TOTAL_DAYS  # noqa: E402
 
@@ -25,6 +26,8 @@ for sid in SYSTEM_ORDER:
            os.path.join(os.environ["DATA_DIR"], f"g_{sid}.png"), "trader")
     render(SYSTEMS[sid], st["series"],
            os.path.join(os.environ["DATA_DIR"], f"g_{sid}s.png"), "styled")
+    render_radar(SYSTEMS[sid], st["series"], st,
+                 os.path.join(os.environ["DATA_DIR"], f"g_{sid}r.png"))
     days = len(SYSTEMS[sid].days)
     assert days == 21, (sid, days)
     ok = ok and days == 21 and st["done"] == 11
@@ -33,4 +36,4 @@ for sid in SYSTEM_ORDER:
           f"proj={ind['projected']}")
 
 assert ok
-print("ALL SYSTEMS OK (3 systems x 21 days, indicators + both charts).")
+print("ALL SYSTEMS OK (3 systems x 21 days, indicators + 3 charts).")

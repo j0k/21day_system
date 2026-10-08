@@ -75,8 +75,8 @@ for data in ("progress", "week:1", "week:2", "week:3", "menu", "today"):
 for txt in ("/today", "/progress", "/help", "/systems", "/cancel", "/menu"):
     bot.on_message({"chat": {"id": CHAT}, "from": {}, "text": txt})
 
-# 7. График (трейдерский/стилизованный) — файл создан.
-for style in ("trader", "styled"):
+# 7. График (трейдерский/стилизованный/радар) — файл создан.
+for style in ("trader", "styled", "radar"):
     CAPTURED.clear()
     bot.on_callback({"id": "1", "data": f"chart:{style}",
                      "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
