@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark" data-lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,33 +7,71 @@
 <meta name="description" content="Как 21day_system считает прогресс: RSI-прогресс, ADX-тренд, ATR-темп, пейс за 7 дней и прогноз финиша — по мотивам индикаторов Дж. Уэллса Уайлдера.">
 <meta name="theme-color" content="#06080f">
 <link rel="icon" href="icon.png">
+<script>(function(){try{
+  var q=new URLSearchParams(location.search);
+  var t=q.get('theme')||localStorage.getItem('t21-theme');
+  var l=q.get('lang')||localStorage.getItem('t21-lang');
+  if(t)document.documentElement.setAttribute('data-theme',t);
+  if(l)document.documentElement.setAttribute('data-lang',l);
+}catch(e){}})();</script>
 <style>
   :root{
-    --bg:#06080f; --card:#0e1322; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
-    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f;
+    --bg:#06080f; --card:#0e1322; --nav-bg:rgba(6,8,15,.72);
+    --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f; --fin-text:#cfdaf2;
+    --fill:rgba(255,255,255,.03); --fill-2:rgba(255,255,255,.06);
+    --bar:rgba(255,255,255,.06); --bar-strong:rgba(255,255,255,.22);
     --green:#37e6a4; --blue:#5aa2ff; --violet:#8b7cff; --orange:#ffb454; --accent:#6b8cff;
     --radius:20px; --maxw:900px; --nav-h:64px;
     --mono:"Consolas",ui-monospace,"SFMono-Regular",Menlo,monospace;
     --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
   }
+  [data-theme="light"]{
+    --bg:#f5f7fc; --card:#ffffff; --nav-bg:rgba(245,247,252,.82);
+    --line:rgba(15,23,42,.10); --line-2:rgba(15,23,42,.17);
+    --text:#0e1526; --muted:#495571; --dim:#7a869c; --fin-text:#2a3550;
+    --fill:rgba(15,23,42,.035); --fill-2:rgba(15,23,42,.07);
+    --bar:rgba(15,23,42,.09); --bar-strong:rgba(15,23,42,.22);
+    --green:#0fae79; --blue:#2f74e0; --violet:#6b5cf0; --orange:#c97706; --accent:#4f6bf0;
+  }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;
-    -webkit-font-smoothing:antialiased}
+    -webkit-font-smoothing:antialiased;transition:background .25s ease,color .25s ease}
   body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     background:radial-gradient(760px 420px at 80% -10%,rgba(107,140,255,.14),transparent 60%),
       radial-gradient(700px 420px at 10% 0%,rgba(55,230,164,.09),transparent 60%)}
+  [data-theme="light"] body::before{background:
+    radial-gradient(760px 420px at 80% -10%,rgba(79,107,240,.12),transparent 60%),
+    radial-gradient(700px 420px at 10% 0%,rgba(15,174,121,.08),transparent 60%)}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   h1,h2,h3{letter-spacing:-.025em}
   .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
 
   nav{position:sticky;top:0;z-index:40;height:var(--nav-h);display:flex;align-items:center;
-    background:rgba(6,8,15,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    background:var(--nav-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
   nav .wrap{display:flex;align-items:center;gap:14px}
   .brand{display:flex;align-items:center;gap:.6rem;font-weight:700}
   .brand img{width:28px;height:28px;border-radius:8px}
-  nav .back{margin-left:auto;color:var(--muted);font-size:.9rem}
+  .tools{display:flex;align-items:center;gap:9px;margin-left:auto}
+  .switch{position:relative;width:54px;height:30px;border-radius:999px;border:1px solid var(--line-2);
+    background:var(--fill);cursor:pointer;padding:0;flex:0 0 auto}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;font-size:.66rem;
+    display:flex;align-items:center;justify-content:center;transition:left .25s ease}
+  .switch .knob .sun{display:none} .switch .knob .moon{display:block}
+  [data-theme="light"] .switch .knob{left:27px}
+  [data-theme="light"] .switch .knob .sun{display:block}
+  [data-theme="light"] .switch .knob .moon{display:none}
+  .lang{position:relative;display:inline-flex;border-radius:10px;border:1px solid var(--line-2);background:var(--fill);
+    padding:3px;cursor:pointer;font-size:.74rem;font-weight:700;flex:0 0 auto}
+  .lang span{position:relative;z-index:1;padding:.2rem .5rem;border-radius:7px;color:var(--muted);transition:color .18s}
+  .lang span.on{color:#fff}
+  .lang .knob2{position:absolute;top:3px;left:3px;height:calc(100% - 6px);width:calc(50% - 3px);border-radius:7px;
+    background:linear-gradient(135deg,var(--accent),var(--violet));transition:left .22s ease;z-index:0}
+  [data-lang="en"] .lang .knob2{left:50%}
+  nav .back{color:var(--muted);font-size:.9rem;margin-left:14px}
   nav .back:hover{color:var(--text)}
 
   header{padding:60px 0 12px}
@@ -45,30 +83,32 @@
   h2{font-size:1.15rem;margin:52px 0 16px}
 
   /* «финансовая» таблица */
-  .fin{font-family:var(--mono);font-size:.86rem;color:#cfdaf2;
+  .fin{font-family:var(--mono);font-size:.86rem;color:var(--fin-text);
     border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:var(--card)}
   .fin .hd,.fin .r{display:grid;grid-template-columns:1fr 76px 120px;gap:14px;align-items:center}
   .fin .hd{color:var(--dim);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
     padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:4px}
-  .fin .r{padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
+  .fin .r{padding:9px 0;border-bottom:1px dashed var(--line)}
   .fin .r:last-child{border-bottom:none}
   .fin .r .k{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .fin .r .k small{color:var(--dim);font-family:var(--sans);margin-left:8px}
   .fin .r .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
-  .fin .r .bar,.fin .hd .bar{display:block;height:9px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .fin .r .bar,.fin .hd .bar{display:block;height:9px;border-radius:99px;background:var(--bar);overflow:hidden}
   .fin .r .bar i{display:block;height:100%;border-radius:99px}
 
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .card{border:1px solid var(--line);border-radius:var(--radius);padding:22px;background:var(--card)}
+  .card{border:1px solid var(--line);border-radius:var(--radius);padding:22px;background:var(--card);
+    color:inherit;transition:border-color .2s}
+  .card:hover{border-color:var(--line-2)}
   .card .ic{font-size:1.3rem;margin-bottom:10px}
   .card h3{margin:.1rem 0 .5rem;font-size:1.06rem}
   .card p{margin:0;color:var(--muted);font-size:.93rem}
   .card .formula{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:.78rem;
-    color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:.3rem .6rem;background:rgba(255,255,255,.03)}
+    color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:.3rem .6rem;background:var(--fill)}
   .zones{margin-top:14px;font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.9}
   .zones b{color:var(--text)}
   .note{margin-top:22px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;
-    background:rgba(255,255,255,.02);color:var(--muted);font-size:.95rem}
+    background:var(--fill);color:var(--muted);font-size:.95rem}
   .note b{color:var(--text)}
 
   footer{padding:40px 0 60px;color:var(--dim);font-size:.9rem;border-top:1px solid var(--line)}
@@ -87,85 +127,157 @@
 <nav>
   <div class="wrap">
     <a class="brand" href="index.html"><img src="icon.png" alt=""> 21day_system</a>
-    <a class="back" href="index.html">&larr; На главную</a>
+    <a class="back" href="index.html" data-i18n="back">&larr; На главную</a>
+    <div class="tools">
+      <button class="lang" id="langBtn" type="button" aria-label="Язык / Language" title="Язык / Language">
+        <span class="knob2" aria-hidden="true"></span>
+        <span class="ru on">RU</span><span class="en">EN</span>
+      </button>
+      <button class="switch" id="themeBtn" type="button" role="switch" aria-checked="true" aria-label="Тема" title="Тема / Theme">
+        <span class="knob"><span class="sun">☀</span><span class="moon">🌙</span></span>
+      </button>
+    </div>
   </div>
 </nav>
 
 <header class="wrap">
-  <div class="eyebrow">Как это считается</div>
-  <h1>Индикаторы прогресса</h1>
-  <p class="lede">Пять показателей, которые бот считает каждый день. В основе — индикаторы <b style="color:var(--text)">Дж. Уэллса Уайлдера</b> (RSI, ADX, ATR), применённые к последовательности отметок «сделано / пропущено» — то есть к ряду нулей и единиц, а не к сумме дней.</p>
+  <div class="eyebrow" data-i18n="eyebrow">Как это считается</div>
+  <h1 data-i18n="h1">Индикаторы прогресса</h1>
+  <p class="lede" data-i18n-html="lede">Пять показателей, которые бот считает каждый день. В основе — индикаторы <b style="color:var(--text)">Дж. Уэллса Уайлдера</b> (RSI, ADX, ATR), применённые к последовательности отметок «сделано / пропущено» — то есть к ряду нулей и единиц, а не к сумме дней.</p>
 </header>
 
 <main class="wrap">
 
   <div class="fin" style="margin-top:26px">
-    <div class="hd"><span>показатель</span><span style="text-align:right">знач.</span><span>шкала</span></div>
-    <div class="r"><span class="k">RSI-прогресс</span><span class="v">58.0</span><span class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span></div>
-    <div class="r"><span class="k">ADX-тренд</span><span class="v">41.2</span><span class="bar"><i style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span></div>
-    <div class="r"><span class="k">ATR-темп</span><span class="v">0.31</span><span class="bar"><i style="width:31%;background:rgba(255,255,255,.22)"></i></span></div>
-    <div class="r"><span class="k">пейс 7 дней</span><span class="v">71%</span><span class="bar"><i style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span></div>
-    <div class="r"><span class="k">прогноз финиша</span><span class="v">день ~21</span><span class="bar"><i style="width:60%;background:rgba(255,255,255,.14)"></i></span></div>
+    <div class="hd"><span data-i18n="fin.metric">показатель</span><span style="text-align:right" data-i18n="fin.val">знач.</span><span data-i18n="fin.scale">шкала</span></div>
+    <div class="r"><span class="k" data-i18n="fin.rsi">RSI-прогресс</span><span class="v">58.0</span><span class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span></div>
+    <div class="r"><span class="k" data-i18n="fin.adx">ADX-тренд</span><span class="v">41.2</span><span class="bar"><i style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span></div>
+    <div class="r"><span class="k" data-i18n="fin.atr">ATR-темп</span><span class="v">0.31</span><span class="bar"><i style="width:31%;background:var(--bar-strong)"></i></span></div>
+    <div class="r"><span class="k" data-i18n="fin.pace">пейс 7 дней</span><span class="v">71%</span><span class="bar"><i style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span></div>
+    <div class="r"><span class="k" data-i18n="fin.proj">прогноз финиша</span><span class="v" data-i18n="projVal">день ~21</span><span class="bar"><i style="width:60%;background:var(--bar)"></i></span></div>
   </div>
 
-  <h2>Три индикатора Уайлдера</h2>
+  <h2 data-i18n="h.wilder">Три индикатора Уайлдера</h2>
   <div class="grid">
     <div class="card">
       <div class="ic">📊</div>
-      <h3>RSI-прогресс <small style="color:var(--dim);font-family:var(--mono)">58.0</small></h3>
-      <p>Импульс практики: как успехи соотносятся с пропусками за последний период. Высокий — практика идёт ровно, низкий — много пропусков подряд.</p>
-      <span class="formula">RSI = 100 − 100 / (1 + средний_рост / среднее_падение)</span>
-      <div class="zones"><b>&lt; 30</b> — срыв &nbsp;·&nbsp; <b>30–70</b> — норма &nbsp;·&nbsp; <b>&gt; 70</b> — ровно</div>
+      <h3><span data-i18n="fin.rsi">RSI-прогресс</span> <small style="color:var(--dim);font-family:var(--mono)">58.0</small></h3>
+      <p data-i18n="rsi.p">Импульс практики: как успехи соотносятся с пропусками за последний период. Высокий — практика идёт ровно, низкий — много пропусков подряд.</p>
+      <span class="formula">RSI = 100 − 100 / (1 + avg_gain / avg_loss)</span>
+      <div class="zones"><b>&lt; 30</b> — <span data-i18n="z.breakdown">срыв</span> &nbsp;·&nbsp; <b>30–70</b> — <span data-i18n="z.normal">норма</span> &nbsp;·&nbsp; <b>&gt; 70</b> — <span data-i18n="z.smooth">ровно</span></div>
     </div>
     <div class="card">
       <div class="ic">📐</div>
-      <h3>ADX-тренд <small style="color:var(--dim);font-family:var(--mono)">41.2</small></h3>
-      <p>Сила и устойчивость серии. Показывает не «сколько сделано», а насколько ровно идёт тренд: высокое значение — ритм держится, низкое — отметки рваные.</p>
-      <span class="formula">ADX = среднее|+DI − −DI| / (+DI + −DI) × 100</span>
-      <div class="zones"><b>&lt; 20</b> — нет тренда &nbsp;·&nbsp; <b>20–40</b> — формируется &nbsp;·&nbsp; <b>&gt; 40</b> — сильный</div>
+      <h3><span data-i18n="fin.adx">ADX-тренд</span> <small style="color:var(--dim);font-family:var(--mono)">41.2</small></h3>
+      <p data-i18n="adx.p">Сила и устойчивость серии. Показывает не «сколько сделано», а насколько ровно идёт тренд: высокое значение — ритм держится, низкое — отметки рваные.</p>
+      <span class="formula">ADX = avg|+DI − −DI| / (+DI + −DI) × 100</span>
+      <div class="zones"><b>&lt; 20</b> — <span data-i18n="z.notrend">нет тренда</span> &nbsp;·&nbsp; <b>20–40</b> — <span data-i18n="z.forming">формируется</span> &nbsp;·&nbsp; <b>&gt; 40</b> — <span data-i18n="z.strong">сильный</span></div>
     </div>
     <div class="card">
       <div class="ic">🌊</div>
-      <h3>ATR-темп <small style="color:var(--dim);font-family:var(--mono)">0.31</small></h3>
-      <p>Волатильность темпа: насколько рвано идут отметки. Низкий — ровный ритм каждый день, высокий — качели «сделал / пропустил».</p>
-      <span class="formula">ATR = среднее сглаживание |отметкаₜ − отметкаₜ₋₁|</span>
-      <div class="zones"><b>≈ 0</b> — стабильно &nbsp;·&nbsp; <b>&gt; 0.5</b> — рвано</div>
+      <h3><span data-i18n="fin.atr">ATR-темп</span> <small style="color:var(--dim);font-family:var(--mono)">0.31</small></h3>
+      <p data-i18n="atr.p">Волатильность темпа: насколько рвано идут отметки. Низкий — ровный ритм каждый день, высокий — качели «сделал / пропустил».</p>
+      <span class="formula">ATR = smoothed avg |markₜ − markₜ₋₁|</span>
+      <div class="zones"><b>≈ 0</b> — <span data-i18n="z.stable">стабильно</span> &nbsp;·&nbsp; <b>&gt; 0.5</b> — <span data-i18n="z.choppy">рвано</span></div>
     </div>
   </div>
 
-  <h2>Два практических показателя</h2>
+  <h2 data-i18n="h.practical">Два практических показателя</h2>
   <div class="grid" style="grid-template-columns:1fr 1fr">
     <div class="card">
       <div class="ic">⏱</div>
-      <h3>Пейс 7 дней <small style="color:var(--dim);font-family:var(--mono)">71%</small></h3>
-      <p>Доля выполнения за последнюю неделю. Простой ответ на вопрос «держу ли я ритм прямо сейчас» — без учёта прошлых заслуг.</p>
-      <span class="formula">пейс = отметок за 7 дней / 7 × 100%</span>
+      <h3><span data-i18n="pace.h">Пейс 7 дней</span> <small style="color:var(--dim);font-family:var(--mono)">71%</small></h3>
+      <p data-i18n="pace.p">Доля выполнения за последнюю неделю. Простой ответ на вопрос «держу ли я ритм прямо сейчас» — без учёта прошлых заслуг.</p>
+      <span class="formula">pace = marks_7d / 7 × 100%</span>
     </div>
     <div class="card">
       <div class="ic">🎯</div>
-      <h3>Прогноз финиша <small style="color:var(--dim);font-family:var(--mono)">день ~21</small></h3>
-      <p>Ожидаемый день завершения по среднему темпу прохождения. Если темп упадёт — прогноз честно сдвинется вправо.</p>
-      <span class="formula">финиш = выполнено + остаток / средний_темп</span>
+      <h3><span data-i18n="proj.h">Прогноз финиша</span> <small style="color:var(--dim);font-family:var(--mono)" data-i18n="projVal">день ~21</small></h3>
+      <p data-i18n="proj.p">Ожидаемый день завершения по среднему темпу прохождения. Если темп упадёт — прогноз честно сдвинется вправо.</p>
+      <span class="formula">finish = done + remaining / avg_pace</span>
     </div>
   </div>
 
   <div class="note">
-    <b>Почему по 0/1, а не по накопленному прогрессу.</b> Если считать индикаторы по сумме выполненных дней, они почти всегда показывали бы «100» — рост неизбежен по построению. Мы применяем формулы Уайлдера к ряду отметок «день сделан = 1, пропущен = 0», поэтому RSI, ADX и ATR действительно отражают ритм, а не размер пройденного пути.
+    <b data-i18n="note.b">Почему по 0/1, а не по накопленному прогрессу.</b> <span data-i18n="note.p">Если считать индикаторы по сумме выполненных дней, они почти всегда показывали бы «100» — рост неизбежен по построению. Мы применяем формулы Уайлдера к ряду отметок «день сделан = 1, пропущен = 0», поэтому RSI, ADX и ATR действительно отражают ритм, а не размер пройденного пути.</span>
   </div>
 
   <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
-    <a class="card" href="index.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600">&larr; На главную</a>
-    <a class="card" href="https://github.com/j0k/21day_system/blob/main/indicators.py" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600">indicators.py на GitHub &rarr;</a>
+    <a class="card" href="index.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600;border-radius:12px" data-i18n="back">&larr; На главную</a>
+    <a class="card" href="readme.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600;border-radius:12px" data-i18n="readme">📄 README как страница</a>
+    <a class="card" href="https://github.com/j0k/21day_system/blob/main/indicators.py" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;font-weight:600;border-radius:12px">indicators.py &rarr;</a>
   </div>
 </main>
 
 <footer>
   <div class="wrap">
     <div>© <span id="year"></span> 21day_system · <a href="https://juri-konoplev.pro/" target="_blank" rel="noopener">juri-konoplev.pro</a></div>
-    <div><a href="index.html">Главная</a> · <a href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Telegram</a></div>
+    <div><a href="index.html" data-i18n="foot.home">Главная</a> · <a href="readme.html" data-i18n="foot.readme">README</a> · <a href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Telegram</a></div>
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+  var I18N={
+    ru:{
+      "back":"← На главную","readme":"📄 README как страница","foot.home":"Главная","foot.readme":"README",
+      "eyebrow":"Как это считается","h1":"Индикаторы прогресса",
+      "lede":"Пять показателей, которые бот считает каждый день. В основе — индикаторы <b style=\"color:var(--text)\">Дж. Уэллса Уайлдера</b> (RSI, ADX, ATR), применённые к последовательности отметок «сделано / пропущено» — то есть к ряду нулей и единиц, а не к сумме дней.",
+      "fin.metric":"показатель","fin.val":"знач.","fin.scale":"шкала","fin.rsi":"RSI-прогресс","fin.adx":"ADX-тренд","fin.atr":"ATR-темп","fin.pace":"пейс 7 дней","fin.proj":"прогноз финиша","projVal":"день ~21",
+      "h.wilder":"Три индикатора Уайлдера",
+      "rsi.p":"Импульс практики: как успехи соотносятся с пропусками за последний период. Высокий — практика идёт ровно, низкий — много пропусков подряд.",
+      "adx.p":"Сила и устойчивость серии. Показывает не «сколько сделано», а насколько ровно идёт тренд: высокое значение — ритм держится, низкое — отметки рваные.",
+      "atr.p":"Волатильность темпа: насколько рвано идут отметки. Низкий — ровный ритм каждый день, высокий — качели «сделал / пропустил».",
+      "z.breakdown":"срыв","z.normal":"норма","z.smooth":"ровно","z.notrend":"нет тренда","z.forming":"формируется","z.strong":"сильный","z.stable":"стабильно","z.choppy":"рвано",
+      "h.practical":"Два практических показателя",
+      "pace.h":"Пейс 7 дней","pace.p":"Доля выполнения за последнюю неделю. Простой ответ на вопрос «держу ли я ритм прямо сейчас» — без учёта прошлых заслуг.",
+      "proj.h":"Прогноз финиша","proj.p":"Ожидаемый день завершения по среднему темпу прохождения. Если темп упадёт — прогноз честно сдвинется вправо.",
+      "note.b":"Почему по 0/1, а не по накопленному прогрессу.","note.p":"Если считать индикаторы по сумме выполненных дней, они почти всегда показывали бы «100» — рост неизбежен по построению. Мы применяем формулы Уайлдера к ряду отметок «день сделан = 1, пропущен = 0», поэтому RSI, ADX и ATR действительно отражают ритм, а не размер пройденного пути."
+    },
+    en:{
+      "back":"← Home","readme":"📄 README as a page","foot.home":"Home","foot.readme":"README",
+      "eyebrow":"How it's computed","h1":"Progress indicators",
+      "lede":"Five metrics the bot computes every day. They are based on <b style=\"color:var(--text)\">J. Welles Wilder's</b> indicators (RSI, ADX, ATR), applied to the sequence of “done / skipped” marks — a series of zeros and ones, not a running total.",
+      "fin.metric":"metric","fin.val":"val.","fin.scale":"scale","fin.rsi":"RSI progress","fin.adx":"ADX trend","fin.atr":"ATR pace","fin.pace":"7-day pace","fin.proj":"finish forecast","projVal":"day ~21",
+      "h.wilder":"The three Wilder indicators",
+      "rsi.p":"Practice momentum: how gains compare with misses over the last period. High — the practice runs smoothly, low — many misses in a row.",
+      "adx.p":"Strength and stability of the streak. It shows not “how much is done” but how evenly the trend runs: high means the rhythm holds, low means choppy marks.",
+      "atr.p":"Pace volatility: how choppy the marks are. Low — an even rhythm every day, high — a “did / skipped” swing.",
+      "z.breakdown":"breaking down","z.normal":"normal","z.smooth":"smooth","z.notrend":"no trend","z.forming":"forming","z.strong":"strong","z.stable":"stable","z.choppy":"choppy",
+      "h.practical":"Two practical metrics",
+      "pace.h":"7-day pace","pace.p":"The completion rate over the last week. A simple answer to “am I keeping the rhythm right now” — regardless of past credit.",
+      "proj.h":"Finish forecast","proj.p":"The expected completion day based on the average pace. If the pace drops, the forecast honestly shifts to the right.",
+      "note.b":"Why 0/1 and not accumulated progress.","note.p":"If the indicators were computed from the sum of completed days, they would almost always read “100” — growth is inevitable by construction. We apply Wilder's formulas to the “day done = 1, skipped = 0” marks, so RSI, ADX and ATR genuinely reflect the rhythm rather than the distance covered."
+    }
+  };
+  var root=document.documentElement;
+  var lang=(root.getAttribute('data-lang')==='en')?'en':'ru';
+  function t(k){return (I18N[lang]&&I18N[lang][k])||(I18N.ru[k]||k);}
+
+  function setTheme(th){
+    root.setAttribute('data-theme',th);
+    try{localStorage.setItem('t21-theme',th);}catch(e){}
+    var sw=document.getElementById('themeBtn'); if(sw) sw.setAttribute('aria-checked',String(th!=='light'));
+    var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content',th==='light'?'#f5f7fc':'#06080f');
+  }
+  setTheme(root.getAttribute('data-theme')==='light'?'light':'dark');
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    setTheme(root.getAttribute('data-theme')==='light'?'dark':'light');
+  });
+
+  function applyLang(l){
+    lang=(l==='en')?'en':'ru';
+    root.setAttribute('data-lang',lang); root.setAttribute('lang',lang);
+    try{localStorage.setItem('t21-lang',lang);}catch(e){}
+    document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent=t(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML=t(el.getAttribute('data-i18n-html')); });
+    var b=document.getElementById('langBtn');
+    b.querySelector('.ru').classList.toggle('on',lang==='ru');
+    b.querySelector('.en').classList.toggle('on',lang==='en');
+  }
+  document.getElementById('langBtn').addEventListener('click',function(){ applyLang(lang==='ru'?'en':'ru'); });
+
+  document.getElementById('year').textContent=new Date().getFullYear();
+  applyLang(lang);
+</script>
 </body>
 </html>

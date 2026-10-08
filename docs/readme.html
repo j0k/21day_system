@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark" data-lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>README — 21day_system</title>
+<meta name="description" content="README 21day_system: полностью, как на GitHub — в чистом и читаемом виде прямо на странице проекта.">
+<meta name="theme-color" content="#06080f">
+<link rel="icon" href="icon.png">
+<script>(function(){try{
+  var q=new URLSearchParams(location.search);
+  var t=q.get('theme')||localStorage.getItem('t21-theme');
+  var l=q.get('lang')||localStorage.getItem('t21-lang');
+  if(t)document.documentElement.setAttribute('data-theme',t);
+  if(l)document.documentElement.setAttribute('data-lang',l);
+}catch(e){}})();</script>
+<style>
+  :root{
+    --bg:#06080f; --card:#0e1322; --card-2:#121a30;
+    --nav-bg:rgba(6,8,15,.72); --nav-solid:rgba(6,8,15,.98);
+    --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f;
+    --fill:rgba(255,255,255,.03); --fill-2:rgba(255,255,255,.06);
+    --code-inline:#ffd9a0; --code-bg:#05070d; --code-text:#cfdaf2;
+    --green:#37e6a4; --blue:#5aa2ff; --violet:#8b7cff; --accent:#6b8cff;
+    --radius:18px; --maxw:920px; --nav-h:64px;
+    --mono:"Consolas",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  [data-theme="light"]{
+    --bg:#f5f7fc; --card:#ffffff; --card-2:#ffffff;
+    --nav-bg:rgba(245,247,252,.82); --nav-solid:rgba(245,247,252,.99);
+    --line:rgba(15,23,42,.10); --line-2:rgba(15,23,42,.17);
+    --text:#0e1526; --muted:#495571; --dim:#7a869c;
+    --fill:rgba(15,23,42,.035); --fill-2:rgba(15,23,42,.07);
+    --code-inline:#a8490a; --code-bg:#f1f4fb; --code-text:#26304a;
+    --green:#0fae79; --blue:#2f74e0; --violet:#6b5cf0; --accent:#4f6bf0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;transition:background .25s ease,color .25s ease}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:radial-gradient(900px 520px at 80% -10%,rgba(107,140,255,.14),transparent 60%)}
+  a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);display:flex;align-items:center;
+    background:var(--nav-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:14px;width:100%}
+  .brand{display:flex;align-items:center;gap:.6rem;font-weight:700;color:var(--text)}
+  .brand img{width:28px;height:28px;border-radius:8px}
+  .spacer{margin-left:auto}
+  .tools{display:flex;align-items:center;gap:9px}
+  .switch{position:relative;width:54px;height:30px;border-radius:999px;border:1px solid var(--line-2);
+    background:var(--fill);cursor:pointer;padding:0;flex:0 0 auto}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;font-size:.66rem;
+    display:flex;align-items:center;justify-content:center;transition:left .25s ease}
+  .switch .knob .sun{display:none} .switch .knob .moon{display:block}
+  [data-theme="light"] .switch .knob{left:27px}
+  [data-theme="light"] .switch .knob .sun{display:block}
+  [data-theme="light"] .switch .knob .moon{display:none}
+  .lang{position:relative;display:inline-flex;border-radius:10px;border:1px solid var(--line-2);background:var(--fill);
+    padding:3px;cursor:pointer;font-size:.74rem;font-weight:700;flex:0 0 auto}
+  .lang span{position:relative;z-index:1;padding:.2rem .5rem;border-radius:7px;color:var(--muted);transition:color .18s}
+  .lang span.on{color:#fff}
+  .lang .knob2{position:absolute;top:3px;left:3px;height:calc(100% - 6px);width:calc(50% - 3px);border-radius:7px;
+    background:linear-gradient(135deg,var(--accent),var(--violet));transition:left .22s ease;z-index:0}
+  [data-lang="en"] .lang .knob2{left:50%}
+  .mini{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .8rem;border-radius:10px;
+    border:1px solid var(--line-2);background:var(--fill);color:var(--muted);font-size:.83rem;font-weight:600;cursor:pointer;white-space:nowrap}
+  .mini:hover{color:var(--text);text-decoration:none;background:var(--fill-2)}
+  .mini.primary{background:linear-gradient(135deg,var(--accent),var(--violet));border:none;color:#fff}
+
+  header.doc-head{padding:30px 0 8px}
+  .crumbs{color:var(--dim);font-size:.84rem}
+  .crumbs a{color:var(--muted)}
+  .doc-head h1{margin:.5rem 0 .2rem;font-size:clamp(1.5rem,3.4vw,2rem);letter-spacing:-.03em}
+  .doc-head p{margin:0;color:var(--muted);font-size:.98rem}
+
+  .bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:16px 0 20px}
+
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:clamp(22px,4vw,46px);margin-bottom:70px;overflow:hidden}
+  .status{color:var(--muted);font-size:.95rem}
+  .status.err{color:#ff8f8f}
+
+  /* ---------- markdown ---------- */
+  .md{font-size:1rem;color:var(--text);overflow-wrap:anywhere}
+  .md > *:first-child{margin-top:0}
+  .md h1,.md h2,.md h3,.md h4{margin:1.7em 0 .55em;line-height:1.25;letter-spacing:-.02em;scroll-margin-top:80px}
+  .md h1{font-size:1.85rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+  .md h2{font-size:1.42rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+  .md h3{font-size:1.16rem} .md h4{font-size:1rem;color:var(--muted)}
+  .md p{margin:0 0 1rem}
+  .md ul,.md ol{margin:0 0 1rem;padding-left:1.5rem}
+  .md li{margin:.28rem 0}
+  .md a{color:var(--blue)}
+  .md img{max-width:100%;height:auto}
+  .md hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
+  .md blockquote{margin:1rem 0;padding:.6rem 1.1rem;border-left:3px solid var(--line-2);
+    background:var(--fill);border-radius:0 10px 10px 0;color:var(--muted)}
+  .md blockquote p{margin:.3rem 0}
+  .md code{font-family:var(--mono);font-size:.86em;background:var(--fill-2);
+    border:1px solid var(--line);border-radius:6px;padding:.1rem .38rem;color:var(--code-inline)}
+  .md pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:14px;padding:16px 18px;
+    overflow:auto;margin:0 0 1rem}
+  .md pre code{background:none;border:none;padding:0;color:var(--code-text);font-size:.85rem;line-height:1.7}
+  .md table{width:100%;border-collapse:collapse;margin:0 0 1.2rem;font-size:.92rem;display:block;overflow-x:auto}
+  .md th,.md td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left}
+  .md th{background:var(--fill-2);font-weight:600}
+  .md tbody tr:nth-child(even){background:var(--fill)}
+  .md input[type="checkbox"]{margin-right:.4rem}
+  .md .task-list-item{list-style:none;margin-left:-1.2rem}
+
+  footer{padding:30px 0 60px;color:var(--dim);font-size:.88rem;border-top:1px solid var(--line)}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--muted)}
+
+  @media(max-width:600px){ .hide-sm{display:none} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.png" alt=""> 21day_system</a>
+    <span class="spacer"></span>
+    <div class="tools">
+      <button class="lang" id="langBtn" type="button" aria-label="Язык / Language" title="Язык / Language">
+        <span class="knob2" aria-hidden="true"></span>
+        <span class="ru on">RU</span><span class="en">EN</span>
+      </button>
+      <button class="switch" id="themeBtn" type="button" role="switch" aria-checked="true" aria-label="Тема" title="Тема / Theme">
+        <span class="knob"><span class="sun">☀</span><span class="moon">🌙</span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="doc-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html" data-i18n="back">&larr; На главную</a></div>
+    <h1>README</h1>
+    <p data-i18n="sub">Полный README — в чистом читаемом виде. Исходный Markdown открывается кнопкой «Raw».</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="bar">
+    <button class="mini" id="rawBtn" type="button" data-i18n="raw">Raw (.md)</button>
+    <button class="mini" id="copyBtn" type="button" data-i18n="copy">Копировать Markdown</button>
+    <a class="mini" id="ghBtn" href="https://github.com/j0k/21day_system/blob/main/README.md" target="_blank" rel="noopener">GitHub</a>
+    <a class="mini primary" href="https://t.me/Sys21_bot" target="_blank" rel="noopener" data-i18n="bot">✈ Открыть бота</a>
+  </div>
+
+  <div class="doc">
+    <div class="status" id="status" data-i18n="loading">Загрузка README…</div>
+    <article class="md" id="md" hidden></article>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© <span id="year"></span> 21day_system · <a href="https://juri-konoplev.pro/" target="_blank" rel="noopener">juri-konoplev.pro</a></div>
+    <div><a href="index.html" data-i18n="back2">Главная</a> · <a href="indicators.html" data-i18n="ind">Индикаторы</a> · <a href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">GitHub</a></div>
+  </div>
+</footer>
+
+<script src="vendor/marked.min.js"></script>
+<script>
+  var REPO="https://github.com/j0k/21day_system";
+  var RAW="https://raw.githubusercontent.com/j0k/21day_system/main/";
+  var FILES={
+    ru:{primary:"README_RU.md", fallback:"README.md"},
+    en:{primary:"README.md",  fallback:"README_RU.md"}
+  };
+  var T={
+    ru:{back:"← На главную",sub:"Полный README — в чистом читаемом виде. Исходный Markdown открывается кнопкой «Raw».",
+        raw:"Raw (.md)",copy:"Копировать Markdown",copied:"Скопировано ✓",bot:"✈ Открыть бота",
+        loading:"Загрузка README…",err:"Не удалось загрузить README.",
+        back2:"Главная",ind:"Индикаторы"},
+    en:{back:"← Home",sub:"The full README, in a clean readable form. The raw Markdown opens with the “Raw” button.",
+        raw:"Raw (.md)",copy:"Copy Markdown",copied:"Copied ✓",bot:"✈ Open bot",
+        loading:"Loading README…",err:"Could not load the README.",
+        back2:"Home",ind:"Indicators"}
+  };
+  var root=document.documentElement;
+  var lang=(root.getAttribute('data-lang')==='en')?'en':'ru';
+  function tt(k){return T[lang][k];}
+  var mdText="";
+
+  /* тема */
+  function setTheme(th){
+    root.setAttribute('data-theme',th);
+    try{localStorage.setItem('t21-theme',th);}catch(e){}
+    var sw=document.getElementById('themeBtn'); if(sw) sw.setAttribute('aria-checked',String(th!=='light'));
+    var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content',th==='light'?'#f5f7fc':'#06080f');
+  }
+  setTheme(root.getAttribute('data-theme')==='light'?'light':'dark');
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    setTheme(root.getAttribute('data-theme')==='light'?'dark':'light');
+  });
+
+  /* и18н хрома страницы */
+  function chrome(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent=tt(el.getAttribute('data-i18n')); });
+    var b=document.getElementById('langBtn');
+    b.querySelector('.ru').classList.toggle('on',lang==='ru');
+    b.querySelector('.en').classList.toggle('on',lang==='en');
+    root.setAttribute('lang',lang);
+  }
+
+  /* ссылки/картинки внутри README -> абсолютные на GitHub/raw */
+  function absolutize(html){
+    var box=document.createElement('div'); box.innerHTML=html;
+    box.querySelectorAll('img').forEach(function(im){
+      var s=im.getAttribute('src')||'';
+      if(!/^(https?:|data:|#|\/)/.test(s)) im.setAttribute('src', RAW+s.replace(/^\.\//,''));
+      im.setAttribute('loading','lazy');
+    });
+    box.querySelectorAll('a').forEach(function(a){
+      var h=a.getAttribute('href')||'';
+      if(/^#/.test(h)) return;
+      if(!/^(https?:|mailto:|\/)/.test(h)){
+        var clean=h.replace(/^\.\//,'');
+        if(/\.md$/i.test(clean)) clean=clean.replace(/\.md$/i,'');
+        a.setAttribute('href', REPO+'/blob/main/'+clean);
+      }
+      a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
+    });
+    return box.innerHTML;
+  }
+
+  function render(text){
+    mdText=text;
+    var html;
+    if(window.marked && marked.parse){ html=marked.parse(text,{gfm:true,breaks:false}); }
+    else { html='<pre style="white-space:pre-wrap">'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'; }
+    var art=document.getElementById('md');
+    art.innerHTML=absolutize(html);
+    art.hidden=false;
+    document.getElementById('status').hidden=true;
+  }
+
+  function fail(msg){
+    var s=document.getElementById('status');
+    s.hidden=false; s.className='status err';
+    s.innerHTML=msg+' <a href="'+REPO+'/blob/main/'+FILES[lang].primary+'" target="_blank" rel="noopener">GitHub &rarr;</a>';
+  }
+
+  async function load(){
+    document.getElementById('status').hidden=false;
+    document.getElementById('md').hidden=true;
+    var st=document.getElementById('status');
+    st.className='status'; st.textContent=tt('loading');
+    var f=FILES[lang];
+    var list=[f.primary,f.fallback];
+    for(var i=0;i<list.length;i++){
+      var name=list[i];
+      // 1) локальная копия (если build_assets.py положил её в docs/)
+      try{ var r=await fetch(name,{cache:'no-cache'}); if(r.ok){ return render(await r.text()); } }catch(e){}
+      // 2) напрямую из репозитория на GitHub (CORS: *)
+      try{ var r2=await fetch(RAW+name,{cache:'no-cache'}); if(r2.ok){ return render(await r2.text()); } }catch(e){}
+    }
+    fail(tt('err'));
+  }
+
+  document.getElementById('langBtn').addEventListener('click',function(){
+    lang=(lang==='ru')?'en':'ru';
+    try{localStorage.setItem('t21-lang',lang);}catch(e){}
+    chrome();
+    document.getElementById('ghBtn').href=REPO+'/blob/main/'+FILES[lang].primary;
+    load();
+  });
+
+  document.getElementById('rawBtn').addEventListener('click',function(){
+    window.open(RAW+FILES[lang].primary,'_blank','noopener');
+  });
+
+  document.getElementById('copyBtn').addEventListener('click',function(){
+    var b=this, old=tt('copy');
+    navigator.clipboard.writeText(mdText||'').then(function(){ b.textContent=tt('copied');
+      setTimeout(function(){b.textContent=tt('copy');},1500); });
+  });
+
+  document.getElementById('year').textContent=new Date().getFullYear();
+  chrome();
+  document.getElementById('ghBtn').href=REPO+'/blob/main/'+FILES[lang].primary;
+  load();
+</script>
+</body>
+</html>

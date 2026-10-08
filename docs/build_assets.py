@@ -2,10 +2,12 @@
 """Собрать ассеты для GitHub Pages из единственного источника версии.
 
 Кладёт рядом с лендингом:
-  * ``icon.png`` / ``icon.svg`` — из корня проекта;
-  * ``version.json``           — из ``version.py`` (для бейджа на странице).
+  * ``icon.png`` / ``icon.svg``    — из корня проекта;
+  * ``version.json``               — из ``version.py`` (для бейджа на странице);
+  * ``README.md`` / ``README_RU.md`` — копии для страницы-просмотрщика
+    ``docs/readme.html`` (чтобы Markdown читался как страница, а не как raw-текст).
 
-Идемпотентно; запускать после смены версии или иконки:
+Идемпотентно; запускать после смены версии/иконки/README:
 
     python docs/build_assets.py
 """
@@ -43,3 +45,12 @@ data = {
 (DOCS / "version.json").write_text(
     json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print("assets: version.json ->", data["version"])
+
+# 3) README-копии для docs/readme.html
+for name in ("README.md", "README_RU.md"):
+    src = ROOT / name
+    if src.exists():
+        shutil.copy2(src, DOCS / name)
+        print("assets:", name)
+    else:
+        print("assets: пропущено (нет)", name)

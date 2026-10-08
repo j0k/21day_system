@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark" data-lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,16 +11,34 @@
 <meta property="og:image" content="icon.png">
 <meta name="theme-color" content="#06080f">
 <link rel="icon" href="icon.png">
+<script>(function(){try{var t=localStorage.getItem('t21-theme');var l=localStorage.getItem('t21-lang');
+if(t)document.documentElement.setAttribute('data-theme',t);
+if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}})();</script>
 <style>
   :root{
     --bg:#06080f; --bg-soft:#0a0d18; --card:#0e1322; --card-2:#121a30;
+    --panel:#0a0f1c; --phone-bg:#0c1120; --code-bg:#05070d; --code-text:#cfdaf2;
+    --nav-bg:rgba(6,8,15,.72); --nav-solid:rgba(6,8,15,.98);
     --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
-    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f;
-    --green:#37e6a4; --blue:#5aa2ff; --violet:#8b7cff; --orange:#ffb454;
-    --accent:#6b8cff;
+    --text:#eef2fb; --muted:#9aa6c4; --dim:#65718f; --fin-text:#cfdaf2;
+    --fill:rgba(255,255,255,.03); --fill-2:rgba(255,255,255,.06);
+    --bar:rgba(255,255,255,.06); --bar-strong:rgba(255,255,255,.22); --dot:rgba(255,255,255,.2);
+    --grid:rgba(255,255,255,.08); --shadow:0 40px 90px -50px #000; --glow-op:.22;
+    --green:#37e6a4; --blue:#5aa2ff; --violet:#8b7cff; --orange:#ffb454; --accent:#6b8cff; --red:#ff6f6f;
     --radius:22px; --maxw:1160px; --nav-h:64px;
     --mono:"Consolas",ui-monospace,"SFMono-Regular",Menlo,monospace;
     --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  [data-theme="light"]{
+    --bg:#f5f7fc; --bg-soft:#eef2fa; --card:#ffffff; --card-2:#ffffff;
+    --panel:#f4f7fd; --phone-bg:#ffffff;
+    --nav-bg:rgba(245,247,252,.82); --nav-solid:rgba(245,247,252,.99);
+    --line:rgba(15,23,42,.10); --line-2:rgba(15,23,42,.17);
+    --text:#0e1526; --muted:#495571; --dim:#7a869c; --fin-text:#2a3550;
+    --fill:rgba(15,23,42,.035); --fill-2:rgba(15,23,42,.07);
+    --bar:rgba(15,23,42,.09); --bar-strong:rgba(15,23,42,.22); --dot:rgba(15,23,42,.22);
+    --grid:rgba(15,23,42,.06); --shadow:0 30px 70px -46px rgba(15,23,42,.5); --glow-op:.14;
+    --green:#0fae79; --blue:#2f74e0; --violet:#6b5cf0; --orange:#c97706; --accent:#4f6bf0; --red:#d64545;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -28,6 +46,7 @@
   body{
     margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
     line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    transition:background .25s ease,color .25s ease;
   }
   body::before{ /* общий мягкий фон */
     content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
@@ -35,6 +54,12 @@
       radial-gradient(900px 520px at 78% -8%,rgba(107,140,255,.16),transparent 60%),
       radial-gradient(820px 520px at 8% 4%,rgba(55,230,164,.10),transparent 60%),
       radial-gradient(700px 500px at 50% 120%,rgba(139,124,255,.12),transparent 60%);
+  }
+  [data-theme="light"] body::before{
+    background:
+      radial-gradient(900px 520px at 78% -8%,rgba(79,107,240,.12),transparent 60%),
+      radial-gradient(820px 520px at 8% 4%,rgba(15,174,121,.08),transparent 60%),
+      radial-gradient(700px 500px at 50% 120%,rgba(107,92,240,.08),transparent 60%);
   }
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
@@ -45,9 +70,9 @@
 
   /* ---------- кнопки ---------- */
   .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.74rem 1.25rem;border-radius:12px;
-    font-weight:600;font-size:.95rem;border:1px solid var(--line-2);background:rgba(255,255,255,.03);
+    font-weight:600;font-size:.95rem;border:1px solid var(--line-2);background:var(--fill);
     color:var(--text);transition:transform .18s ease,border-color .18s ease,background .18s ease;cursor:pointer;white-space:nowrap}
-  .btn:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.06)}
+  .btn:hover{transform:translateY(-2px);border-color:var(--line-2);background:var(--fill-2)}
   .btn.primary{background:linear-gradient(135deg,var(--accent),var(--violet));border:none;color:#fff;
     box-shadow:0 14px 40px -14px rgba(107,140,255,.9)}
   .btn.primary:hover{box-shadow:0 20px 48px -14px rgba(107,140,255,1)}
@@ -56,31 +81,48 @@
 
   /* ---------- навигация ---------- */
   nav{position:sticky;top:0;z-index:50;height:var(--nav-h);display:flex;align-items:center;
-    background:rgba(6,8,15,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:var(--nav-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;gap:22px;width:100%}
+  nav .wrap{display:flex;align-items:center;gap:18px;width:100%}
   .brand{display:flex;align-items:center;gap:.6rem;font-weight:700;letter-spacing:-.02em}
   .brand img{width:30px;height:30px;border-radius:9px}
   .brand small{color:var(--dim);font-weight:600}
-  .nav-links{display:flex;gap:26px;margin-left:auto;font-size:.92rem;color:var(--muted)}
+  .nav-links{display:flex;gap:24px;margin-left:auto;font-size:.92rem;color:var(--muted)}
   .nav-links a{transition:color .15s}
   .nav-links a:hover{color:var(--text)}
   nav .btn{padding:.55rem 1rem;font-size:.88rem}
-  .burger{display:none;margin-left:auto;background:none;border:1px solid var(--line-2);border-radius:10px;
+  .tools{display:flex;align-items:center;gap:9px;margin-left:auto}
+  .switch{position:relative;width:54px;height:30px;border-radius:999px;border:1px solid var(--line-2);
+    background:var(--fill);cursor:pointer;padding:0;flex:0 0 auto}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;font-size:.66rem;
+    display:flex;align-items:center;justify-content:center;transition:left .25s ease}
+  .switch .knob .sun{display:none} .switch .knob .moon{display:block}
+  [data-theme="light"] .switch .knob{left:27px}
+  [data-theme="light"] .switch .knob .sun{display:block}
+  [data-theme="light"] .switch .knob .moon{display:none}
+  .lang{position:relative;display:inline-flex;border-radius:10px;border:1px solid var(--line-2);background:var(--fill);
+    padding:3px;cursor:pointer;font-size:.74rem;font-weight:700;flex:0 0 auto}
+  .lang span{position:relative;z-index:1;padding:.2rem .5rem;border-radius:7px;color:var(--muted);transition:color .18s}
+  .lang span.on{color:#fff}
+  .lang .knob2{position:absolute;top:3px;left:3px;height:calc(100% - 6px);width:calc(50% - 3px);border-radius:7px;
+    background:linear-gradient(135deg,var(--accent),var(--violet));transition:left .22s ease;z-index:0}
+  [data-lang="en"] .lang .knob2{left:50%}
+  .burger{display:none;background:none;border:1px solid var(--line-2);border-radius:10px;
     color:var(--text);padding:.45rem .6rem;font-size:1.05rem;cursor:pointer}
 
   /* ---------- герой ---------- */
   header{position:relative;padding:82px 0 70px;overflow:hidden}
   header::before{
     content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
     background-size:58px 58px;
     mask-image:radial-gradient(ellipse 70% 60% at 50% 0%,#000,transparent 78%);
     -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 0%,#000,transparent 78%);
   }
   .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
   .pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .8rem;border-radius:999px;
-    border:1px solid var(--line-2);background:rgba(255,255,255,.03);font-size:.82rem;color:var(--muted);margin-bottom:1.2rem}
+    border:1px solid var(--line-2);background:var(--fill);font-size:.82rem;color:var(--muted);margin-bottom:1.2rem}
   .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(55,230,164,.16)}
   .pill b{color:var(--text)}
   h1{font-size:clamp(2.3rem,5.2vw,3.6rem);line-height:1.05;margin:.1rem 0 .9rem;letter-spacing:-.035em}
@@ -90,11 +132,10 @@
 
   /* ---------- мок продукта ---------- */
   .stage{position:relative;display:flex;justify-content:center}
-  .glow{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(80px);opacity:.22;
+  .glow{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(80px);opacity:var(--glow-op);
     background:radial-gradient(circle at 50% 50%,var(--blue),transparent 66%)}
-  .phone{position:relative;width:100%;max-width:392px;background:#0c1120;
-    border:1px solid var(--line-2);border-radius:26px;padding:18px;
-    box-shadow:0 40px 90px -50px #000}
+  .phone{position:relative;width:100%;max-width:392px;background:var(--phone-bg);
+    border:1px solid var(--line-2);border-radius:26px;padding:18px;box-shadow:var(--shadow)}
   .phone .top{display:flex;align-items:center;gap:.6rem;padding-bottom:12px;border-bottom:1px solid var(--line);color:var(--dim);font-size:.82rem}
   .phone .top img{width:28px;height:28px;border-radius:50%}
   .phone .top b{color:var(--text)}
@@ -108,39 +149,37 @@
   .cap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
   .cap b{font-size:.92rem}
   .cap span{font-size:.72rem;color:var(--dim);font-family:var(--mono)}
-  .panel-box{background:#0a0f1c;border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+  .panel-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
   .hero-action{font-size:.9rem;color:var(--text);line-height:1.5;margin:0 0 12px}
   .hero-action .em{opacity:.8}
 
   /* «финансовая» таблица: колонки выровнены, цифры моноширинные */
-  .fin{font-family:var(--mono);font-size:.78rem;color:#cfdaf2}
+  .fin{font-family:var(--mono);font-size:.78rem;color:var(--fin-text)}
   .fin .hd,.fin .r{display:grid;grid-template-columns:1fr 58px 92px;gap:10px;align-items:center}
   .fin .hd{color:var(--dim);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;
     padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:3px}
-  .fin .r{padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+  .fin .r{padding:5px 0;border-bottom:1px dashed var(--line)}
   .fin .r:last-child{border-bottom:none}
   .fin .r .k{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .fin .r .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
-  .fin .r .bar,.fin .hd .bar{display:block;height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+  .fin .r .bar,.fin .hd .bar{display:block;height:8px;border-radius:99px;background:var(--bar);overflow:hidden}
   .fin .r .bar i{display:block;height:100%;border-radius:99px}
-  .fin.lead .hd,.fin.lead .r{grid-template-columns:1fr 62px 44px}
-  .fin.lead .r .k{color:var(--text)}
-  .fin.lead .r .no{color:var(--dim);text-align:right}
-  .up{color:var(--green)} .down{color:#ff6f6f}
+  .up{color:var(--green)} .down{color:var(--red)}
 
   .kbd{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
-  .kbd span{font-size:.74rem;padding:.32rem .62rem;border-radius:9px;background:rgba(255,255,255,.04);
-    border:1px solid var(--line);color:var(--muted)}
+  .kbd span{font-size:.74rem;padding:.32rem .62rem;border-radius:9px;background:var(--fill-2);
+    border:1px solid var(--line);color:var(--muted);cursor:pointer;transition:.15s}
+  .kbd span:hover{color:var(--text);border-color:var(--line-2)}
   .kbd span.on{border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff}
 
   .pnav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:32px;height:32px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;font-size:1.15rem;line-height:1;cursor:pointer;
-    border:1px solid var(--line-2);background:rgba(6,8,15,.82);color:var(--text);backdrop-filter:blur(6px);transition:.16s}
+    border:1px solid var(--line-2);background:var(--nav-bg);color:var(--text);backdrop-filter:blur(6px);transition:.16s}
   .pnav:hover{border-color:var(--accent);transform:translateY(-50%) scale(1.06)}
   .pnav.prev{left:-14px} .pnav.next{right:-14px}
   .pdots{display:flex;gap:8px;justify-content:center;margin-top:14px}
   .pdots button{width:7px;height:7px;border-radius:99px;border:none;padding:0;cursor:pointer;
-    background:rgba(255,255,255,.2);transition:.25s}
+    background:var(--dot);transition:.25s}
   .pdots button.on{width:22px;background:linear-gradient(90deg,var(--accent),var(--violet))}
 
   /* график в моке */
@@ -148,12 +187,22 @@
   .chart .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;height:100%}
   .chart .col .bx{width:100%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--blue),var(--violet));min-height:4px}
   .chart .col.hit .bx{background:linear-gradient(180deg,var(--green),#1fae7f)}
-  .chart .col.miss .bx{background:rgba(255,255,255,.08)}
+  .chart .col.miss .bx{background:var(--bar)}
   .chart .col small{font-size:.58rem;color:var(--dim);font-family:var(--mono)}
   .note{margin-top:11px;font-size:.77rem;font-family:var(--mono);color:var(--green)}
-  .msg{background:#0a0f1c;border:1px solid var(--line);border-radius:14px;padding:13px 14px;font-size:.83rem;color:var(--muted);line-height:1.62}
+  .msg{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;font-size:.83rem;color:var(--muted);line-height:1.62}
   .msg b{color:var(--text)}
   .tag{display:inline-block;font-size:.67rem;font-family:var(--mono);color:var(--accent);border:1px solid var(--line);border-radius:99px;padding:.15rem .55rem;margin-bottom:9px}
+
+  /* радар (стиль дисплея целей) */
+  .radar{display:block;width:100%;max-width:214px;margin:2px auto 0}
+  .radar .ring{fill:none;stroke:var(--line-2)}
+  .radar .axis{stroke:var(--line);stroke-dasharray:3 5}
+  .radar .sweep{fill:url(#gSweep);opacity:.55}
+  .radar .blip{fill:var(--muted);opacity:.7}
+  .radar .blip.done{fill:var(--green);opacity:1}
+  .radar .blip.target{fill:var(--accent);opacity:1}
+  .radar .halo{fill:none;stroke:var(--accent);opacity:.5}
 
   /* ---------- статистика ---------- */
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
@@ -177,21 +226,19 @@
     padding:24px;background:var(--card);transition:border-color .2s ease}
   .tile:hover{border-color:var(--line-2)}
   .tile .ic{font-size:1.35rem;display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;
-    border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);margin-bottom:13px}
+    border-radius:12px;background:var(--fill-2);border:1px solid var(--line);margin-bottom:13px}
   .tile h3{margin:.1rem 0 .45rem;font-size:1.06rem}
   .tile p{margin:0;color:var(--muted);font-size:.93rem}
   .span-3{grid-column:span 3} .span-2{grid-column:span 2} .span-4{grid-column:span 4}
-  .tile.big{display:flex;flex-direction:column;justify-content:space-between}
-  .tile .mini-bars{margin-top:16px}
 
   /* табы систем */
   .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
-  .tab{padding:.6rem 1.05rem;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.02);
+  .tab{padding:.6rem 1.05rem;border-radius:11px;border:1px solid var(--line);background:var(--fill);
     color:var(--muted);font-weight:600;font-size:.92rem;cursor:pointer;transition:.16s}
   .tab:hover{color:var(--text);border-color:var(--line-2)}
   .tab[aria-selected="true"]{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--violet))}
   .panel{display:none;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
-    background:linear-gradient(180deg,var(--card),var(--card-2))}
+    background:var(--card)}
   .panel.show{display:grid;grid-template-columns:1.1fr .9fr;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .panel .body{padding:34px 34px 30px}
@@ -201,25 +248,25 @@
   .panel p{color:var(--muted);margin:0 0 1rem}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{font-size:.8rem;padding:.32rem .7rem;border-radius:999px;border:1px solid var(--line);
-    background:rgba(255,255,255,.03);color:var(--muted)}
+    background:var(--fill);color:var(--muted)}
 
   /* шаги */
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
   .step{position:relative;padding:26px 24px;border:1px solid var(--line);border-radius:var(--radius);
-    background:linear-gradient(180deg,var(--card),var(--card-2))}
+    background:var(--card)}
   .step .n{font-family:var(--mono);font-size:.85rem;color:var(--accent);font-weight:700;margin-bottom:12px;display:block}
   .step h3{margin:.1rem 0 .45rem;font-size:1.08rem}
   .step p{margin:0;color:var(--muted);font-size:.93rem}
 
   /* код */
-  .code{position:relative;background:#05070d;border:1px solid var(--line-2);border-radius:18px;
+  .code{position:relative;background:var(--code-bg);border:1px solid var(--line-2);border-radius:18px;
     padding:20px 20px;font-family:var(--mono);font-size:.88rem;overflow:auto;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
-  .code pre{margin:0;color:#cfdaf2;line-height:1.7}
+  .code pre{margin:0;color:var(--code-text);line-height:1.7}
   .code .c{color:var(--dim)} .code .k{color:var(--green)} .code .p{color:var(--orange)}
   .copy{position:absolute;top:12px;right:12px;font-size:.74rem;padding:.34rem .68rem;border-radius:9px;
-    border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;transition:.15s}
-  .copy:hover{color:var(--text);border-color:rgba(255,255,255,.35)}
+    border:1px solid var(--line-2);background:var(--fill-2);color:var(--muted);cursor:pointer;transition:.15s}
+  .copy:hover{color:var(--text);border-color:var(--line-2)}
 
   /* FAQ */
   .faq{max-width:820px;margin:0 auto}
@@ -235,8 +282,7 @@
   /* финальный CTA */
   .band{position:relative;overflow:hidden;border:1px solid var(--line-2);border-radius:28px;
     padding:52px 44px;text-align:center;
-    background:radial-gradient(600px 280px at 50% -30%,rgba(107,140,255,.22),transparent 70%),
-      linear-gradient(180deg,var(--card),var(--card-2))}
+    background:radial-gradient(600px 280px at 50% -30%,rgba(107,140,255,.22),transparent 70%),var(--card)}
   .band h2{font-size:clamp(1.7rem,3.4vw,2.3rem);margin:.2rem 0 .7rem}
   .band p{color:var(--muted);max-width:560px;margin:0 auto 1.6rem}
   .band .cta{justify-content:center}
@@ -261,6 +307,7 @@
     .steps{grid-template-columns:1fr}
     .stats{grid-template-columns:1fr 1fr}
   }
+  @media(max-width:720px){ .nav-cta{display:none} }
   @media(max-width:560px){
     .bento{grid-template-columns:1fr}.span-3,.span-2,.span-4{grid-column:span 1}
     .stats{grid-template-columns:1fr 1fr}
@@ -275,14 +322,24 @@
   <div class="wrap">
     <a class="brand" href="#top"><img src="icon.png" alt=""> 21day_system <small id="navVer">1.0-Beta</small></a>
     <div class="nav-links">
-      <a href="#systems">Системы</a>
-      <a href="#features">Возможности</a>
-      <a href="indicators.html">Индикаторы</a>
-      <a href="#start">Старт</a>
-      <a href="#faq">FAQ</a>
+      <a href="#systems" data-i18n="nav.systems">Системы</a>
+      <a href="#features" data-i18n="nav.features">Возможности</a>
+      <a href="indicators.html" data-i18n="nav.indicators">Индикаторы</a>
+      <a href="readme.html" data-i18n="nav.readme">README</a>
+      <a href="#start" data-i18n="nav.start">Старт</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </div>
+    <div class="tools">
+      <button class="lang" id="langBtn" type="button" aria-label="Язык / Language" title="Язык / Language">
+        <span class="knob2" aria-hidden="true"></span>
+        <span class="ru on">RU</span><span class="en">EN</span>
+      </button>
+      <button class="switch" id="themeBtn" type="button" role="switch" aria-checked="true" aria-label="Тема" title="Тема / Theme">
+        <span class="knob"><span class="sun">☀</span><span class="moon">🌙</span></span>
+      </button>
     </div>
     <button class="burger" id="burger" aria-label="Меню">☰</button>
-    <a class="btn primary" href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Открыть бота</a>
+    <a class="btn primary nav-cta" href="https://t.me/Sys21_bot" target="_blank" rel="noopener" data-i18n="nav.cta">Открыть бота</a>
   </div>
 </nav>
 
@@ -290,14 +347,14 @@
 <header id="top">
   <div class="wrap hero">
     <div>
-      <span class="pill"><span class="dot"></span> Версия <b id="heroVer">1.0-Beta</b> · открытый исходный код</span>
-      <h1>Три <span class="grad">21-дневные</span> практики<br>в одном Telegram-боте</h1>
-      <p class="lede">Навыки, режим дня и сон — по 3–7 минут в день. Бот ведёт счёт, показывает прогресс индикаторами в стиле <b style="color:var(--text)">Welles Wilder</b>, рисует графики и радар. Работает даже без API-ключа.</p>
+      <span class="pill"><span class="dot"></span> <span data-i18n="hero.pillA">Версия</span> <b id="heroVer">1.0-Beta</b> <span data-i18n="hero.pillB">· открытый исходный код</span></span>
+      <h1 data-i18n-html="hero.h1">Три <span class="grad">21-дневные</span> практики<br>в одном Telegram-боте</h1>
+      <p class="lede" data-i18n-html="hero.lede">Навыки, режим дня и сон — по 3–7 минут в день. Бот ведёт счёт, показывает прогресс индикаторами в стиле <b style="color:var(--text)">Welles Wilder</b>, рисует графики и радар. Работает даже без API-ключа.</p>
       <div class="cta">
-        <a class="btn tg" href="https://t.me/Sys21_bot" target="_blank" rel="noopener">✈ Открыть бота</a>
-        <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">★ Исходный код</a>
-        <a class="btn" href="https://github.com/j0k/21day_system/blob/main/README_RU.md" target="_blank" rel="noopener">📖 Документация</a>
-        <span class="hint">Python 3.10+ · stdlib + matplotlib · SQLite · работает офлайн</span>
+        <a class="btn tg" href="https://t.me/Sys21_bot" target="_blank" rel="noopener" data-i18n="hero.ctaBot">✈ Открыть бота</a>
+        <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener" data-i18n="hero.ctaSrc">★ Исходный код</a>
+        <a class="btn" href="https://github.com/j0k/21day_system/blob/main/README_RU.md" target="_blank" rel="noopener" data-i18n="hero.ctaDoc">📖 Документация</a>
+        <span class="hint" data-i18n="hero.hint">Python 3.10+ · stdlib + matplotlib · SQLite · работает офлайн</span>
       </div>
     </div>
     <div class="stage">
@@ -310,17 +367,18 @@
 
             <!-- 0 · Сегодня -->
             <div class="screen">
-              <div class="cap"><b>Сегодня</b><span>день 14/21</span></div>
+              <div class="cap"><b data-i18n="mock.today">Сегодня</b><span data-i18n="mock.todaySub">день 14/21</span></div>
               <div class="panel-box">
-                <p class="hero-action">День 14 · <b>короткая практика</b> <span class="em">· ~5 минут</span></p>
+                <p class="hero-action" data-i18n-html="mock.action">День 14 · <b>короткая практика</b> <span class="em">· ~5 минут</span></p>
                 <div class="kbd">
-                  <span class="on" id="markBtn" role="button" tabindex="0">✅ Отметить день</span>
-                  <span id="noteBtn" role="button" tabindex="0">📝 Заметка</span>
-                  <span data-go="3" role="button" tabindex="0">💡 Совет дня</span>
+                  <span class="on" id="markBtn" role="button" tabindex="0" data-i18n="mock.mark">✅ Отметить день</span>
+                  <span id="noteBtn" role="button" tabindex="0" data-i18n="mock.note">📝 Заметка</span>
+                  <span data-go="3" role="button" tabindex="0" data-i18n="mock.tip">💡 Совет дня</span>
                 </div>
                 <div class="kbd">
-                  <span data-go="2" role="button" tabindex="0">📊 График</span>
-                  <span data-go="1" role="button" tabindex="0">📈 Прогресс</span>
+                  <span data-go="2" role="button" tabindex="0" data-i18n="mock.chart">📊 График</span>
+                  <span data-go="1" role="button" tabindex="0" data-i18n="mock.progress">📈 Прогресс</span>
+                  <span data-go="4" role="button" tabindex="0" data-i18n="mock.radar">🎯 Радар</span>
                 </div>
                 <div class="note" id="dayNote" hidden></div>
               </div>
@@ -328,45 +386,45 @@
 
             <!-- 1 · Прогресс -->
             <div class="screen">
-              <div class="cap"><b>📈 Прогресс</b><span>Welles Wilder</span></div>
+              <div class="cap"><b data-i18n="mock.progress">📈 Прогресс</b><span>Welles Wilder</span></div>
               <div class="panel-box fin">
-                <div class="hd"><span>показатель</span><span style="text-align:right">знач.</span><span>шкала</span></div>
+                <div class="hd"><span data-i18n="fin.metric">показатель</span><span style="text-align:right" data-i18n="fin.val">знач.</span><span data-i18n="fin.scale">шкала</span></div>
                 <div class="r">
-                  <span class="k">выполнено</span>
+                  <span class="k" data-i18n="fin.done">выполнено</span>
                   <span class="v" id="doneNow">14/21 · 67%</span>
                   <span class="bar"><i id="doneBar" style="width:67%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span>
                 </div>
                 <div class="r">
-                  <span class="k">RSI-прогресс</span>
+                  <span class="k" data-i18n="fin.rsi">RSI-прогресс</span>
                   <span class="v" id="rsiVal">58.0</span>
                   <span class="bar"><i id="rsiBar" style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span>
                 </div>
                 <div class="r">
-                  <span class="k">ADX-тренд</span>
+                  <span class="k" data-i18n="fin.adx">ADX-тренд</span>
                   <span class="v" id="adxVal">41.2</span>
                   <span class="bar"><i id="adxBar" style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span>
                 </div>
                 <div class="r">
-                  <span class="k">ATR-темп</span>
+                  <span class="k" data-i18n="fin.atr">ATR-темп</span>
                   <span class="v" id="atrVal">0.31</span>
-                  <span class="bar"><i style="width:31%;background:rgba(255,255,255,.22)"></i></span>
+                  <span class="bar"><i style="width:31%;background:var(--bar-strong)"></i></span>
                 </div>
                 <div class="r">
-                  <span class="k">пейс 7 дней</span>
+                  <span class="k" data-i18n="fin.pace">пейс 7 дней</span>
                   <span class="v" id="paceVal">71%</span>
                   <span class="bar"><i id="paceBar" style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span>
                 </div>
                 <div class="r">
-                  <span class="k">прогноз финиша</span>
+                  <span class="k" data-i18n="fin.proj">прогноз финиша</span>
                   <span class="v" id="projVal">день ~21</span>
-                  <span class="bar"><i id="projBar" style="width:60%;background:rgba(255,255,255,.14)"></i></span>
+                  <span class="bar"><i id="projBar" style="width:60%;background:var(--bar)"></i></span>
                 </div>
               </div>
             </div>
 
             <!-- 2 · График -->
             <div class="screen">
-              <div class="cap"><b>📊 График</b><span>последние 7 дней</span></div>
+              <div class="cap"><b data-i18n="mock.chart">📊 График</b><span data-i18n="mock.chartSub">последние 7 дней</span></div>
               <div class="panel-box">
                 <div class="chart" id="miniChart">
                   <div class="col hit"><span class="bx" style="height:70%"></span><small>8</small></div>
@@ -383,10 +441,41 @@
 
             <!-- 3 · Совет -->
             <div class="screen">
-              <div class="cap"><b>💡 Совет дня</b><span>офлайн</span></div>
+              <div class="cap"><b data-i18n="mock.tip">💡 Совет дня</b><span data-i18n="mock.tipSub">офлайн</span></div>
               <div class="panel-box">
-                <span class="tag">без API-ключа — правило, а не модель</span>
-                <div class="msg">Не важно, как прошёл вчерашний день. Сегодня достаточно <b>5 минут</b>: отметь его и держи ритм. Серия важнее вдохновения.</div>
+                <span class="tag" data-i18n="mock.tipTag">без API-ключа — правило, а не модель</span>
+                <div class="msg" data-i18n-html="mock.tipMsg">Не важно, как прошёл вчерашний день. Сегодня достаточно <b>5 минут</b>: отметь его и держи ритм. Серия важнее вдохновения.</div>
+              </div>
+            </div>
+
+            <!-- 4 · Радар -->
+            <div class="screen">
+              <div class="cap"><b data-i18n="mock.radar">🎯 Радар</b><span data-i18n="mock.radarSub">цели сходятся к центру</span></div>
+              <div class="panel-box">
+                <svg class="radar" viewBox="0 0 220 220" role="img" aria-label="radar">
+                  <defs>
+                    <linearGradient id="gSweep" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="var(--accent)" stop-opacity="0"/>
+                      <stop offset="1" stop-color="var(--accent)" stop-opacity=".45"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="ring" cx="110" cy="110" r="100"/>
+                  <circle class="ring" cx="110" cy="110" r="68"/>
+                  <circle class="ring" cx="110" cy="110" r="38"/>
+                  <circle class="ring" cx="110" cy="110" r="14"/>
+                  <path class="sweep" d="M110 110 L210 110 A100 100 0 0 1 181 181 Z"/>
+                  <line class="axis" x1="10" y1="110" x2="210" y2="110"/>
+                  <line class="axis" x1="110" y1="10" x2="110" y2="210"/>
+                  <line class="axis" x1="39" y1="39" x2="181" y2="181"/>
+                  <line class="axis" x1="181" y1="39" x2="39" y2="181"/>
+                  <circle class="blip done" cx="68" cy="62" r="4"/>
+                  <circle class="blip done" cx="152" cy="146" r="4"/>
+                  <circle class="blip done" cx="96" cy="176" r="4"/>
+                  <circle class="blip" cx="164" cy="74" r="3.4"/>
+                  <circle class="halo" cx="124" cy="98" r="9"/>
+                  <circle class="blip target" cx="124" cy="98" r="4.6"/>
+                </svg>
+                <div class="note" id="radarNote">цели: 3/5 · до финиша 7 дн.</div>
               </div>
             </div>
 
@@ -402,10 +491,10 @@
 
   <div class="wrap">
     <div class="stats">
-      <div class="stat reveal"><b data-count="3">0</b><span>системы на выбор</span></div>
-      <div class="stat reveal"><b data-count="21">0</b><span>день в каждой</span></div>
-      <div class="stat reveal"><b data-count="5">0</b><span>индикаторов Wilder</span></div>
-      <div class="stat reveal"><b>0 ₽</b><span>работает офлайн</span></div>
+      <div class="stat reveal"><b data-count="3">0</b><span data-i18n="stat.1">системы на выбор</span></div>
+      <div class="stat reveal"><b data-count="21">0</b><span data-i18n="stat.2">день в каждой</span></div>
+      <div class="stat reveal"><b data-count="5">0</b><span data-i18n="stat.3">индикаторов Wilder</span></div>
+      <div class="stat reveal"><b>0 ₽</b><span data-i18n="stat.4">работает офлайн</span></div>
     </div>
   </div>
 </header>
@@ -414,41 +503,41 @@
 <section id="systems">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Три системы</div>
-      <h2>Один ритм, три направления</h2>
-      <p>Первый запуск — выбор кнопкой, менять можно в любой момент. Каждая система разбита на три недели: <b style="color:var(--text)">замечать → держать ритм → закреплять</b>.</p>
+      <div class="eyebrow" data-i18n="sys.eyebrow">Три системы</div>
+      <h2 data-i18n="sys.h2">Один ритм, три направления</h2>
+      <p data-i18n-html="sys.p">Первый запуск — выбор кнопкой, менять можно в любой момент. Каждая система разбита на три недели: <b style="color:var(--text)">замечать → держать ритм → закреплять</b>.</p>
     </div>
 
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-tab="0">🧠 Микро-практика</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="1">🗓 Режим дня</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="2">🌙 Сон</button>
+      <button class="tab" role="tab" aria-selected="true" data-tab="0" data-i18n="sys.tab0">🧠 Микро-практика</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="1" data-i18n="sys.tab1">🗓 Режим дня</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="2" data-i18n="sys.tab2">🌙 Сон</button>
     </div>
 
     <div class="panel show" data-panel="0">
       <div class="body">
-        <div class="eyebrow" style="color:var(--green)">21 день · микро-практика</div>
-        <h3>Косвенная прокачка навыков</h3>
-        <p>Короткие ежедневные действия, которые растят навык незаметно — как капитал на счёте. Регулярность важнее интенсивности.</p>
-        <div class="chips"><span class="chip">Prolog-мышление</span><span class="chip">робототехника</span><span class="chip">RSI и edge</span><span class="chip">Welles Wilder</span></div>
+        <div class="eyebrow" style="color:var(--green)" data-i18n="sys.p0.eyebrow">21 день · микро-практика</div>
+        <h3 data-i18n="sys.p0.h">Косвенная прокачка навыков</h3>
+        <p data-i18n="sys.p0.p">Короткие ежедневные действия, которые растят навык незаметно — как капитал на счёте. Регулярность важнее интенсивности.</p>
+        <div class="chips"><span class="chip" data-i18n="sys.p0.c1">Prolog-мышление</span><span class="chip" data-i18n="sys.p0.c2">робототехника</span><span class="chip" data-i18n="sys.p0.c3">RSI и edge</span><span class="chip" data-i18n="sys.p0.c4">Welles Wilder</span></div>
       </div>
       <div class="accent">🧠</div>
     </div>
     <div class="panel" data-panel="1">
       <div class="body">
-        <div class="eyebrow" style="color:var(--blue)">21 день · режим дня</div>
-        <h3>Устойчивый ритм и фокус</h3>
-        <p>Настройка среды, якорей и приоритетов, чтобы день держался сам, а не на силе воли.</p>
-        <div class="chips"><span class="chip">среда и триггеры</span><span class="chip">якоря привычек</span><span class="chip">приоритеты дня</span><span class="chip">восстановление</span></div>
+        <div class="eyebrow" style="color:var(--blue)" data-i18n="sys.p1.eyebrow">21 день · режим дня</div>
+        <h3 data-i18n="sys.p1.h">Устойчивый ритм и фокус</h3>
+        <p data-i18n="sys.p1.p">Настройка среды, якорей и приоритетов, чтобы день держался сам, а не на силе воли.</p>
+        <div class="chips"><span class="chip" data-i18n="sys.p1.c1">среда и триггеры</span><span class="chip" data-i18n="sys.p1.c2">якоря привычек</span><span class="chip" data-i18n="sys.p1.c3">приоритеты дня</span><span class="chip" data-i18n="sys.p1.c4">восстановление</span></div>
       </div>
       <div class="accent">🗓</div>
     </div>
     <div class="panel" data-panel="2">
       <div class="body">
-        <div class="eyebrow" style="color:var(--orange)">Ночной ритм · 21 день сна</div>
-        <h3>Качество сна</h3>
-        <p>Свет, среда спальни и ритуалы отхода ко сну — чтобы засыпать быстрее и просыпаться легче.</p>
-        <div class="chips"><span class="chip">свет и экраны</span><span class="chip">спальня</span><span class="chip">ритуалы отхода</span><span class="chip">расслабление</span></div>
+        <div class="eyebrow" style="color:var(--orange)" data-i18n="sys.p2.eyebrow">Ночной ритм · 21 день сна</div>
+        <h3 data-i18n="sys.p2.h">Качество сна</h3>
+        <p data-i18n="sys.p2.p">Свет, среда спальни и ритуалы отхода ко сну — чтобы засыпать быстрее и просыпаться легче.</p>
+        <div class="chips"><span class="chip" data-i18n="sys.p2.c1">свет и экраны</span><span class="chip" data-i18n="sys.p2.c2">спальня</span><span class="chip" data-i18n="sys.p2.c3">ритуалы отхода</span><span class="chip" data-i18n="sys.p2.c4">расслабление</span></div>
       </div>
       <div class="accent">🌙</div>
     </div>
@@ -459,30 +548,30 @@
 <section id="features">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Возможности</div>
-      <h2>Всё, чтобы дойти до 21-го дня</h2>
-      <p>И не сорваться на девятом. Ниже — то, что уже работает.</p>
+      <div class="eyebrow" data-i18n="feat.eyebrow">Возможности</div>
+      <h2 data-i18n="feat.h2">Всё, чтобы дойти до 21-го дня</h2>
+      <p data-i18n="feat.p">И не сорваться на девятом. Ниже — то, что уже работает.</p>
     </div>
 
     <div class="bento">
       <div class="tile span-3 reveal">
         <span class="ic">📈</span>
-        <h3>Индикаторы в стиле Welles Wilder</h3>
-        <p>RSI, ADX и ATR, применённые к ряду отметок 0/1. <a href="indicators.html" style="color:var(--blue)">Как они считаются &rarr;</a></p>
+        <h3 data-i18n="feat.t1.h">Индикаторы в стиле Welles Wilder</h3>
+        <p data-i18n-html="feat.t1.p">RSI, ADX и ATR, применённые к ряду отметок 0/1. <a href="indicators.html" style="color:var(--blue)">Как они считаются &rarr;</a></p>
       </div>
 
       <div class="tile span-3 reveal">
         <span class="ic">🎨</span>
-        <h3>Графики и радар прогресса</h3>
-        <p>Одной командой <code style="font-family:var(--mono);color:var(--muted)">/chart</code>: трейдерский (тёмный), стилизованный (светлый) и радар, где метки целей сходятся к центру по мере приближения к финишу.</p>
+        <h3 data-i18n="feat.t2.h">Графики и радар прогресса</h3>
+        <p data-i18n-html="feat.t2.p">Одной командой <code style="font-family:var(--mono);color:var(--muted)">/chart</code>: трейдерский (тёмный), стилизованный (светлый) и радар, где метки целей сходятся к центру по мере приближения к финишу.</p>
       </div>
 
-      <div class="tile span-2 reveal"><span class="ic">✅</span><h3>Отметки и заметки</h3><p>Выполнено / пропущено по каждому дню плюс короткие заметки.</p></div>
-      <div class="tile span-2 reveal"><span class="ic">🏆</span><h3>Лидерборд</h3><p>Счётчик участников и топ-3 прямо на экране выбора системы.</p></div>
-      <div class="tile span-2 reveal"><span class="ic">🔒</span><h3>Приватность</h3><p>Публичный профиль в рейтинге или приватный — «Private User».</p></div>
-      <div class="tile span-2 reveal"><span class="ic">💬</span><h3>Чат с LLM</h3><p>Свободный диалог с моделью о функционале, ответы в Markdown.</p></div>
-      <div class="tile span-2 reveal"><span class="ic">🛠</span><h3>Админка</h3><p>Сводка, пользователи, карточки, журнал событий и рассылка.</p></div>
-      <div class="tile span-2 reveal"><span class="ic">🏷</span><h3>Версии</h3><p>Единый источник версии и changelog из git-истории: <code style="font-family:var(--mono);color:var(--muted)">/version</code>, <code style="font-family:var(--mono);color:var(--muted)">/news</code>.</p></div>
+      <div class="tile span-2 reveal"><span class="ic">✅</span><h3 data-i18n="feat.t3.h">Отметки и заметки</h3><p data-i18n="feat.t3.p">Выполнено / пропущено по каждому дню плюс короткие заметки.</p></div>
+      <div class="tile span-2 reveal"><span class="ic">🏆</span><h3 data-i18n="feat.t4.h">Лидерборд</h3><p data-i18n="feat.t4.p">Счётчик участников и топ-3 прямо на экране выбора системы.</p></div>
+      <div class="tile span-2 reveal"><span class="ic">🔒</span><h3 data-i18n="feat.t5.h">Приватность</h3><p data-i18n="feat.t5.p">Публичный профиль в рейтинге или приватный — «Private User».</p></div>
+      <div class="tile span-2 reveal"><span class="ic">💬</span><h3 data-i18n="feat.t6.h">Чат с LLM</h3><p data-i18n="feat.t6.p">Свободный диалог с моделью о функционале, ответы в Markdown.</p></div>
+      <div class="tile span-2 reveal"><span class="ic">🛠</span><h3 data-i18n="feat.t7.h">Админка</h3><p data-i18n="feat.t7.p">Сводка, пользователи, карточки, журнал событий и рассылка.</p></div>
+      <div class="tile span-2 reveal"><span class="ic">🏷</span><h3 data-i18n="feat.t8.h">Версии</h3><p data-i18n-html="feat.t8.p">Единый источник версии и changelog из git-истории: <code style="font-family:var(--mono);color:var(--muted)">/version</code>, <code style="font-family:var(--mono);color:var(--muted)">/news</code>.</p></div>
     </div>
   </div>
 </section>
@@ -491,19 +580,19 @@
 <section id="preview">
   <div class="wrap">
     <div class="sec-head" style="text-align:center;margin-left:auto;margin-right:auto">
-      <div class="eyebrow">Прогресс, который видно</div>
-      <h2>Не просто счётчик дней</h2>
-      <p style="margin:0 auto 1.4rem">Бот показывает <b style="color:var(--text)">состояние практики</b> теми же индикаторами, что используют трейдеры: RSI, ADX, ATR — применённые к ряду отметок 0/1.</p>
-      <a class="btn" href="indicators.html">Все пять индикаторов &rarr;</a>
+      <div class="eyebrow" data-i18n="prog.eyebrow">Прогресс, который видно</div>
+      <h2 data-i18n="prog.h2">Не просто счётчик дней</h2>
+      <p style="margin:0 auto 1.4rem" data-i18n-html="prog.p">Бот показывает <b style="color:var(--text)">состояние практики</b> теми же индикаторами, что используют трейдеры: RSI, ADX, ATR — применённые к ряду отметок 0/1.</p>
+      <a class="btn" href="indicators.html" data-i18n="prog.btn">Все пять индикаторов &rarr;</a>
     </div>
 
     <div class="fin" style="max-width:520px;margin:34px auto 0;border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:var(--card)">
-      <div class="hd"><span>показатель</span><span style="text-align:right">знач.</span><span>шкала</span></div>
-      <div class="r"><span class="k">RSI-прогресс</span><span class="v">58.0</span><span class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span></div>
-      <div class="r"><span class="k">ADX-тренд</span><span class="v">41.2</span><span class="bar"><i style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span></div>
-      <div class="r"><span class="k">ATR-темп</span><span class="v">0.31</span><span class="bar"><i style="width:31%;background:rgba(255,255,255,.22)"></i></span></div>
-      <div class="r"><span class="k">пейс 7 дней</span><span class="v">71%</span><span class="bar"><i style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span></div>
-      <div class="r"><span class="k">прогноз финиша</span><span class="v">день ~21</span><span class="bar"><i style="width:60%;background:rgba(255,255,255,.14)"></i></span></div>
+      <div class="hd"><span data-i18n="fin.metric">показатель</span><span style="text-align:right" data-i18n="fin.val">знач.</span><span data-i18n="fin.scale">шкала</span></div>
+      <div class="r"><span class="k" data-i18n="fin.rsi">RSI-прогресс</span><span class="v">58.0</span><span class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></span></div>
+      <div class="r"><span class="k" data-i18n="fin.adx">ADX-тренд</span><span class="v">41.2</span><span class="bar"><i style="width:41%;background:linear-gradient(90deg,var(--violet),var(--blue))"></i></span></div>
+      <div class="r"><span class="k" data-i18n="fin.atr">ATR-темп</span><span class="v">0.31</span><span class="bar"><i style="width:31%;background:var(--bar-strong)"></i></span></div>
+      <div class="r"><span class="k" data-i18n="fin.pace">пейс 7 дней</span><span class="v">71%</span><span class="bar"><i style="width:71%;background:linear-gradient(90deg,var(--orange),var(--green))"></i></span></div>
+      <div class="r"><span class="k" data-i18n="fin.proj">прогноз финиша</span><span class="v" data-i18n="fin.projVal">день ~21</span><span class="bar"><i style="width:60%;background:var(--bar)"></i></span></div>
     </div>
   </div>
 </section>
@@ -512,13 +601,13 @@
 <section id="start">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Быстрый старт</div>
-      <h2>Запуск за минуту</h2>
-      <p>Нужен только <b style="color:var(--text)">Python 3.10+</b> и токен от <a href="https://t.me/BotFather" target="_blank" rel="noopener" style="color:var(--blue)">@BotFather</a>. API-ключ LLM — необязателен: без него бот работает офлайн.</p>
+      <div class="eyebrow" data-i18n="start.eyebrow">Быстрый старт</div>
+      <h2 data-i18n="start.h2">Запуск за минуту</h2>
+      <p data-i18n-html="start.p">Нужен только <b style="color:var(--text)">Python 3.10+</b> и токен от <a href="https://t.me/BotFather" target="_blank" rel="noopener" style="color:var(--blue)">@BotFather</a>. API-ключ LLM — необязателен: без него бот работает офлайн.</p>
     </div>
 
     <div class="code">
-      <button class="copy" id="copyBtn">Копировать</button>
+      <button class="copy" id="copyBtn" data-i18n="start.copy">Копировать</button>
 <pre id="cmd"><span class="c"># 1. клонировать и подготовить окружение</span>
 <span class="k">git</span> clone https://github.com/j0k/21day_system.git
 <span class="k">cd</span> 21day_system
@@ -529,15 +618,16 @@
     </div>
 
     <div class="steps" style="margin-top:26px">
-      <div class="step reveal"><span class="n">01 · SETUP</span><h3>Клонировать</h3><p>Стандартная библиотека и matplotlib — внешних сервисов не нужно.</p></div>
-      <div class="step reveal"><span class="n">02 · CONFIG</span><h3>Вписать токен</h3><p>Один <code style="font-family:var(--mono);color:var(--muted)">TELEGRAM_BOT_TOKEN</code> в <code style="font-family:var(--mono);color:var(--muted)">.env</code>. Ключ LLM — по желанию.</p></div>
-      <div class="step reveal"><span class="n">03 · RUN</span><h3>Запустить</h3><p><code style="font-family:var(--mono);color:var(--muted)">python bot.py</code> — и нажать Start в Telegram.</p></div>
+      <div class="step reveal"><span class="n">01 · SETUP</span><h3 data-i18n="start.s1.h">Клонировать</h3><p data-i18n="start.s1.p">Стандартная библиотека и matplotlib — внешних сервисов не нужно.</p></div>
+      <div class="step reveal"><span class="n">02 · CONFIG</span><h3 data-i18n="start.s2.h">Вписать токен</h3><p data-i18n-html="start.s2.p">Один <code style="font-family:var(--mono);color:var(--muted)">TELEGRAM_BOT_TOKEN</code> в <code style="font-family:var(--mono);color:var(--muted)">.env</code>. Ключ LLM — по желанию.</p></div>
+      <div class="step reveal"><span class="n">03 · RUN</span><h3 data-i18n="start.s3.h">Запустить</h3><p data-i18n-html="start.s3.p"><code style="font-family:var(--mono);color:var(--muted)">python bot.py</code> — и нажать Start в Telegram.</p></div>
     </div>
 
     <div class="cta" style="margin-top:26px">
-      <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">Открыть на GitHub</a>
-      <a class="btn" href="https://github.com/j0k/21day_system/blob/main/SETUP.md" target="_blank" rel="noopener">Установка и настройка</a>
-      <a class="btn" href="https://github.com/j0k/21day_system/blob/main/HOWTO_MAKE_SELF_21_SYS.md" target="_blank" rel="noopener">Собрать свою систему</a>
+      <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener" data-i18n="start.b1">Открыть на GitHub</a>
+      <a class="btn" href="readme.html" data-i18n="start.b4">📄 README как страница</a>
+      <a class="btn" href="https://github.com/j0k/21day_system/blob/main/SETUP.md" target="_blank" rel="noopener" data-i18n="start.b2">Установка и настройка</a>
+      <a class="btn" href="https://github.com/j0k/21day_system/blob/main/HOWTO_MAKE_SELF_21_SYS.md" target="_blank" rel="noopener" data-i18n="start.b3">Собрать свою систему</a>
     </div>
   </div>
 </section>
@@ -546,15 +636,15 @@
 <section id="faq">
   <div class="wrap">
     <div class="sec-head center" style="text-align:center">
-      <div class="eyebrow">FAQ</div>
-      <h2>Частые вопросы</h2>
+      <div class="eyebrow" data-i18n="faq.eyebrow">FAQ</div>
+      <h2 data-i18n="faq.h2">Частые вопросы</h2>
     </div>
     <div class="faq">
-      <details open><summary>Нужен ли API-ключ, чтобы пользоваться ботом?</summary><p>Нет. Без ключа бот работает в офлайн-режиме: совет дня формируется по правилам, без обращений в сеть. Ключ (OpenAI-совместимый, например RouterAI) добавляет «умные» ответы и чат с моделью.</p></details>
-      <details><summary>Где хранятся данные?</summary><p>В одном файле SQLite — <code style="font-family:var(--mono)">data/21day.sqlite3</code>: пользователи, отметки по дням и журнал событий. Ничего лишнего наружу не уходит.</p></details>
-      <details><summary>Можно ли собрать свою 21-дневную систему?</summary><p>Да. Есть отдельный гайд <b>HOWTO_MAKE_SELF_21_SYS.md</b>: система описывается данными в <code style="font-family:var(--mono)">systems.py</code>, а придумать и оформить её можно прямо в диалоге с LLM.</p></details>
-      <details><summary>Что такое индикаторы Welles Wilder здесь?</summary><p>Это RSI, ADX и ATR — классические индикаторы Дж. Уэллса Уайлдера, применённые к последовательности отметок 0/1. Они показывают импульс, силу тренда и волатильность темпа прохождения практики.</p></details>
-      <details><summary>Есть ли мобильное приложение?</summary><p>Нет — и не нужно: весь интерфейс живёт в Telegram. Отдельно запланировано десктопное приложение-пульт (трей) для управления ботом и прогрессом с рабочего стола.</p></details>
+      <details open><summary data-i18n="faq.q1">Нужен ли API-ключ, чтобы пользоваться ботом?</summary><p data-i18n="faq.a1">Нет. Без ключа бот работает в офлайн-режиме: совет дня формируется по правилам, без обращений в сеть. Ключ (OpenAI-совместимый, например RouterAI) добавляет «умные» ответы и чат с моделью.</p></details>
+      <details><summary data-i18n="faq.q2">Где хранятся данные?</summary><p data-i18n="faq.a2">В одном файле SQLite — data/21day.sqlite3: пользователи, отметки по дням и журнал событий. Ничего лишнего наружу не уходит.</p></details>
+      <details><summary data-i18n="faq.q3">Можно ли собрать свою 21-дневную систему?</summary><p data-i18n="faq.a3">Да. Есть отдельный гайд HOWTO_MAKE_SELF_21_SYS.md: система описывается данными в systems.py, а придумать и оформить её можно прямо в диалоге с LLM.</p></details>
+      <details><summary data-i18n="faq.q4">Что такое индикаторы Welles Wilder здесь?</summary><p data-i18n="faq.a4">Это RSI, ADX и ATR — классические индикаторы Дж. Уэллса Уайлдера, применённые к последовательности отметок 0/1. Они показывают импульс, силу тренда и волатильность темпа прохождения практики.</p></details>
+      <details><summary data-i18n="faq.q5">Есть ли мобильное приложение?</summary><p data-i18n="faq.a5">Нет — и не нужно: весь интерфейс живёт в Telegram. Отдельно запланировано десктопное приложение-пульт (трей) для управления ботом и прогрессом с рабочего стола.</p></details>
     </div>
   </div>
 </section>
@@ -563,12 +653,12 @@
 <section>
   <div class="wrap">
     <div class="band">
-      <div class="eyebrow">Начни сегодня</div>
-      <h2>21 день, 3 системы, один бот</h2>
-      <p>Открой бота в Telegram или забери исходный код и запусти свой собственный.</p>
+      <div class="eyebrow" data-i18n="band.eyebrow">Начни сегодня</div>
+      <h2 data-i18n="band.h2">21 день, 3 системы, один бот</h2>
+      <p data-i18n="band.p">Открой бота в Telegram или забери исходный код и запусти свой собственный.</p>
       <div class="cta">
-        <a class="btn tg" href="https://t.me/Sys21_bot" target="_blank" rel="noopener">✈ Открыть бота</a>
-        <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">★ GitHub</a>
+        <a class="btn tg" href="https://t.me/Sys21_bot" target="_blank" rel="noopener" data-i18n="hero.ctaBot">✈ Открыть бота</a>
+        <a class="btn primary" href="https://github.com/j0k/21day_system" target="_blank" rel="noopener" data-i18n="band.b2">★ GitHub</a>
       </div>
     </div>
   </div>
@@ -579,14 +669,181 @@
     <div>© <span id="year"></span> 21day_system · <a href="https://juri-konoplev.pro/" target="_blank" rel="noopener">juri-konoplev.pro</a></div>
     <div>
       <a href="https://github.com/j0k/21day_system" target="_blank" rel="noopener">GitHub</a> ·
-      <a href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Telegram</a> ·
-      <a href="https://github.com/j0k/21day_system/blob/main/README_RU.md" target="_blank" rel="noopener">README</a> ·
-      <a href="https://github.com/j0k/21day_system/blob/main/README.md" target="_blank" rel="noopener">EN</a>
+      <a href="readme.html" data-i18n="nav.readme">README</a> ·
+      <a href="indicators.html" data-i18n="nav.indicators">Индикаторы</a> ·
+      <a href="https://t.me/Sys21_bot" target="_blank" rel="noopener">Telegram</a>
     </div>
   </div>
 </footer>
 
 <script>
+  /* ================= i18n ================= */
+  var I18N={
+    ru:{
+      "nav.systems":"Системы","nav.features":"Возможности","nav.indicators":"Индикаторы",
+      "nav.start":"Старт","nav.faq":"FAQ","nav.cta":"Открыть бота",
+      "nav.readme":"README",
+      "hero.pillA":"Версия","hero.pillB":"· открытый исходный код",
+      "hero.h1":"Три <span class=\"grad\">21-дневные</span> практики<br>в одном Telegram-боте",
+      "hero.lede":"Навыки, режим дня и сон — по 3–7 минут в день. Бот ведёт счёт, показывает прогресс индикаторами в стиле <b style=\"color:var(--text)\">Welles Wilder</b>, рисует графики и радар. Работает даже без API-ключа.",
+      "hero.ctaBot":"✈ Открыть бота","hero.ctaSrc":"★ Исходный код","hero.ctaDoc":"📖 Документация",
+      "hero.hint":"Python 3.10+ · stdlib + matplotlib · SQLite · работает офлайн",
+      "stat.1":"системы на выбор","stat.2":"день в каждой","stat.3":"индикаторов Wilder","stat.4":"работает офлайн",
+      "sys.eyebrow":"Три системы","sys.h2":"Один ритм, три направления",
+      "sys.p":"Первый запуск — выбор кнопкой, менять можно в любой момент. Каждая система разбита на три недели: <b style=\"color:var(--text)\">замечать → держать ритм → закреплять</b>.",
+      "sys.tab0":"🧠 Микро-практика","sys.tab1":"🗓 Режим дня","sys.tab2":"🌙 Сон",
+      "sys.p0.eyebrow":"21 день · микро-практика","sys.p0.h":"Косвенная прокачка навыков",
+      "sys.p0.p":"Короткие ежедневные действия, которые растят навык незаметно — как капитал на счёте. Регулярность важнее интенсивности.",
+      "sys.p0.c1":"Prolog-мышление","sys.p0.c2":"робототехника","sys.p0.c3":"RSI и edge","sys.p0.c4":"Welles Wilder",
+      "sys.p1.eyebrow":"21 день · режим дня","sys.p1.h":"Устойчивый ритм и фокус",
+      "sys.p1.p":"Настройка среды, якорей и приоритетов, чтобы день держался сам, а не на силе воли.",
+      "sys.p1.c1":"среда и триггеры","sys.p1.c2":"якоря привычек","sys.p1.c3":"приоритеты дня","sys.p1.c4":"восстановление",
+      "sys.p2.eyebrow":"Ночной ритм · 21 день сна","sys.p2.h":"Качество сна",
+      "sys.p2.p":"Свет, среда спальни и ритуалы отхода ко сну — чтобы засыпать быстрее и просыпаться легче.",
+      "sys.p2.c1":"свет и экраны","sys.p2.c2":"спальня","sys.p2.c3":"ритуалы отхода","sys.p2.c4":"расслабление",
+      "feat.eyebrow":"Возможности","feat.h2":"Всё, чтобы дойти до 21-го дня","feat.p":"И не сорваться на девятом. Ниже — то, что уже работает.",
+      "feat.t1.h":"Индикаторы в стиле Welles Wilder",
+      "feat.t1.p":"RSI, ADX и ATR, применённые к ряду отметок 0/1. <a href=\"indicators.html\" style=\"color:var(--blue)\">Как они считаются &rarr;</a>",
+      "feat.t2.h":"Графики и радар прогресса",
+      "feat.t2.p":"Одной командой <code style=\"font-family:var(--mono);color:var(--muted)\">/chart</code>: трейдерский (тёмный), стилизованный (светлый) и радар, где метки целей сходятся к центру по мере приближения к финишу.",
+      "feat.t3.h":"Отметки и заметки","feat.t3.p":"Выполнено / пропущено по каждому дню плюс короткие заметки.",
+      "feat.t4.h":"Лидерборд","feat.t4.p":"Счётчик участников и топ-3 прямо на экране выбора системы.",
+      "feat.t5.h":"Приватность","feat.t5.p":"Публичный профиль в рейтинге или приватный — «Private User».",
+      "feat.t6.h":"Чат с LLM","feat.t6.p":"Свободный диалог с моделью о функционале, ответы в Markdown.",
+      "feat.t7.h":"Админка","feat.t7.p":"Сводка, пользователи, карточки, журнал событий и рассылка.",
+      "feat.t8.h":"Версии",
+      "feat.t8.p":"Единый источник версии и changelog из git-истории: <code style=\"font-family:var(--mono);color:var(--muted)\">/version</code>, <code style=\"font-family:var(--mono);color:var(--muted)\">/news</code>.",
+      "prog.eyebrow":"Прогресс, который видно","prog.h2":"Не просто счётчик дней",
+      "prog.p":"Бот показывает <b style=\"color:var(--text)\">состояние практики</b> теми же индикаторами, что используют трейдеры: RSI, ADX, ATR — применённые к ряду отметок 0/1.",
+      "prog.btn":"Все пять индикаторов &rarr;",
+      "start.eyebrow":"Быстрый старт","start.h2":"Запуск за минуту",
+      "start.p":"Нужен только <b style=\"color:var(--text)\">Python 3.10+</b> и токен от <a href=\"https://t.me/BotFather\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--blue)\">@BotFather</a>. API-ключ LLM — необязателен: без него бот работает офлайн.",
+      "start.copy":"Копировать","start.copied":"Скопировано ✓",
+      "start.s1.h":"Клонировать","start.s1.p":"Стандартная библиотека и matplotlib — внешних сервисов не нужно.",
+      "start.s2.h":"Вписать токен","start.s2.p":"Один <code style=\"font-family:var(--mono);color:var(--muted)\">TELEGRAM_BOT_TOKEN</code> в <code style=\"font-family:var(--mono);color:var(--muted)\">.env</code>. Ключ LLM — по желанию.",
+      "start.s3.h":"Запустить","start.s3.p":"<code style=\"font-family:var(--mono);color:var(--muted)\">python bot.py</code> — и нажать Start в Telegram.",
+      "start.b1":"Открыть на GitHub","start.b2":"Установка и настройка","start.b3":"Собрать свою систему",
+      "start.b4":"📄 README как страница",
+      "faq.eyebrow":"FAQ","faq.h2":"Частые вопросы",
+      "faq.q1":"Нужен ли API-ключ, чтобы пользоваться ботом?","faq.a1":"Нет. Без ключа бот работает в офлайн-режиме: совет дня формируется по правилам, без обращений в сеть. Ключ (OpenAI-совместимый, например RouterAI) добавляет «умные» ответы и чат с моделью.",
+      "faq.q2":"Где хранятся данные?","faq.a2":"В одном файле SQLite — data/21day.sqlite3: пользователи, отметки по дням и журнал событий. Ничего лишнего наружу не уходит.",
+      "faq.q3":"Можно ли собрать свою 21-дневную систему?","faq.a3":"Да. Есть отдельный гайд HOWTO_MAKE_SELF_21_SYS.md: система описывается данными в systems.py, а придумать и оформить её можно прямо в диалоге с LLM.",
+      "faq.q4":"Что такое индикаторы Welles Wilder здесь?","faq.a4":"Это RSI, ADX и ATR — классические индикаторы Дж. Уэллса Уайлдера, применённые к последовательности отметок 0/1. Они показывают импульс, силу тренда и волатильность темпа прохождения практики.",
+      "faq.q5":"Есть ли мобильное приложение?","faq.a5":"Нет — и не нужно: весь интерфейс живёт в Telegram. Отдельно запланировано десктопное приложение-пульт (трей) для управления ботом и прогрессом с рабочего стола.",
+      "band.eyebrow":"Начни сегодня","band.h2":"21 день, 3 системы, один бот",
+      "band.p":"Открой бота в Telegram или забери исходный код и запусти свой собственный.","band.b2":"★ GitHub",
+      "mock.today":"Сегодня","mock.todaySub":"день 14/21",
+      "mock.action":"День 14 · <b>короткая практика</b> <span class=\"em\">· ~5 минут</span>",
+      "mock.mark":"✅ Отметить день","mock.marked":"✓ День отмечен","mock.note":"📝 Заметка",
+      "mock.tip":"💡 Совет дня","mock.chart":"📊 График","mock.progress":"📈 Прогресс","mock.radar":"🎯 Радар",
+      "mock.chartSub":"последние 7 дней","mock.tipSub":"офлайн","mock.radarSub":"цели сходятся к центру",
+      "mock.tipTag":"без API-ключа — правило, а не модель",
+      "mock.tipMsg":"Не важно, как прошёл вчерашний день. Сегодня достаточно <b>5 минут</b>: отметь его и держи ритм. Серия важнее вдохновения.",
+      "mock.dayNote":"📝 «5 минут дыхания — самочувствие ок»",
+      "mock.noteOn":"✅ день {d} отмечен","mock.noteOff":"день {d} пока не отмечен",
+      "fin.metric":"показатель","fin.val":"знач.","fin.scale":"шкала",
+      "fin.done":"выполнено","fin.rsi":"RSI-прогресс","fin.adx":"ADX-тренд","fin.atr":"ATR-темп",
+      "fin.pace":"пейс 7 дней","fin.proj":"прогноз финиша","fin.projVal":"день ~21"
+    },
+    en:{
+      "nav.systems":"Systems","nav.features":"Features","nav.indicators":"Indicators",
+      "nav.start":"Start","nav.faq":"FAQ","nav.cta":"Open bot",
+      "nav.readme":"README",
+      "hero.pillA":"Version","hero.pillB":"· open source",
+      "hero.h1":"Three <span class=\"grad\">21-day</span> practices<br>in one Telegram bot",
+      "hero.lede":"Skills, daily rhythm and sleep — 3–7 minutes a day. The bot keeps count, shows progress with <b style=\"color:var(--text)\">Welles Wilder</b>-style indicators, and draws charts and a radar. Works even without an API key.",
+      "hero.ctaBot":"✈ Open bot","hero.ctaSrc":"★ Source code","hero.ctaDoc":"📖 Documentation",
+      "hero.hint":"Python 3.10+ · stdlib + matplotlib · SQLite · works offline",
+      "stat.1":"systems to choose","stat.2":"days in each","stat.3":"Wilder indicators","stat.4":"works offline",
+      "sys.eyebrow":"Three systems","sys.h2":"One rhythm, three directions",
+      "sys.p":"First launch — pick with a button, switch anytime. Each system is split into three weeks: <b style=\"color:var(--text)\">notice → keep the rhythm → lock in</b>.",
+      "sys.tab0":"🧠 Micro-practice","sys.tab1":"🗓 Daily rhythm","sys.tab2":"🌙 Sleep",
+      "sys.p0.eyebrow":"21 days · micro-practice","sys.p0.h":"Indirect skill building",
+      "sys.p0.p":"Short daily actions that grow a skill unnoticed — like capital in an account. Consistency beats intensity.",
+      "sys.p0.c1":"Prolog thinking","sys.p0.c2":"robotics","sys.p0.c3":"RSI and edge","sys.p0.c4":"Welles Wilder",
+      "sys.p1.eyebrow":"21 days · daily rhythm","sys.p1.h":"A steady rhythm and focus",
+      "sys.p1.p":"Setting up your environment, anchors and priorities so the day holds itself, not willpower.",
+      "sys.p1.c1":"environment & triggers","sys.p1.c2":"habit anchors","sys.p1.c3":"daily priorities","sys.p1.c4":"recovery",
+      "sys.p2.eyebrow":"Night rhythm · 21 days of sleep","sys.p2.h":"Sleep quality",
+      "sys.p2.p":"Light, bedroom environment and bedtime rituals — to fall asleep faster and wake up easier.",
+      "sys.p2.c1":"light & screens","sys.p2.c2":"bedroom","sys.p2.c3":"bedtime rituals","sys.p2.c4":"relaxation",
+      "feat.eyebrow":"Features","feat.h2":"Everything to reach day 21","feat.p":"And not fall off on day nine. Below is what already works.",
+      "feat.t1.h":"Welles Wilder-style indicators",
+      "feat.t1.p":"RSI, ADX and ATR applied to a 0/1 series of marks. <a href=\"indicators.html\" style=\"color:var(--blue)\">How they're computed &rarr;</a>",
+      "feat.t2.h":"Charts and progress radar",
+      "feat.t2.p":"One <code style=\"font-family:var(--mono);color:var(--muted)\">/chart</code> command: a trader-style (dark), a stylized (light) chart and a radar where target marks converge to the center as you approach the finish.",
+      "feat.t3.h":"Marks and notes","feat.t3.p":"Done / skipped per day plus short notes.",
+      "feat.t4.h":"Leaderboard","feat.t4.p":"Participant count and top-3 right on the system picker.",
+      "feat.t5.h":"Privacy","feat.t5.p":"Public profile in the rating or private — “Private User”.",
+      "feat.t6.h":"LLM chat","feat.t6.p":"Free-form chat with the model about features, answers in Markdown.",
+      "feat.t7.h":"Admin panel","feat.t7.p":"Summary, users, cards, event log and broadcast.",
+      "feat.t8.h":"Versions",
+      "feat.t8.p":"A single source of version and changelog from git history: <code style=\"font-family:var(--mono);color:var(--muted)\">/version</code>, <code style=\"font-family:var(--mono);color:var(--muted)\">/news</code>.",
+      "prog.eyebrow":"Progress you can see","prog.h2":"Not just a day counter",
+      "prog.p":"The bot shows the <b style=\"color:var(--text)\">state of the practice</b> with the same indicators traders use: RSI, ADX, ATR — applied to the 0/1 series of marks.",
+      "prog.btn":"All five indicators &rarr;",
+      "start.eyebrow":"Quick start","start.h2":"Launch in a minute",
+      "start.p":"All you need is <b style=\"color:var(--text)\">Python 3.10+</b> and a token from <a href=\"https://t.me/BotFather\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--blue)\">@BotFather</a>. An LLM API key is optional: without it the bot runs offline.",
+      "start.copy":"Copy","start.copied":"Copied ✓",
+      "start.s1.h":"Clone","start.s1.p":"Standard library and matplotlib — no external services needed.",
+      "start.s2.h":"Add the token","start.s2.p":"One <code style=\"font-family:var(--mono);color:var(--muted)\">TELEGRAM_BOT_TOKEN</code> in <code style=\"font-family:var(--mono);color:var(--muted)\">.env</code>. LLM key — optional.",
+      "start.s3.h":"Run","start.s3.p":"<code style=\"font-family:var(--mono);color:var(--muted)\">python bot.py</code> — then press Start in Telegram.",
+      "start.b1":"Open on GitHub","start.b2":"Setup & config","start.b3":"Build your own system",
+      "start.b4":"📄 README as a page",
+      "faq.eyebrow":"FAQ","faq.h2":"Frequently asked questions",
+      "faq.q1":"Do I need an API key to use the bot?","faq.a1":"No. Without a key the bot runs in offline mode: the daily tip is rule-based, with no network calls. A key (OpenAI-compatible, e.g. RouterAI) adds smarter answers and model chat.",
+      "faq.q2":"Where is the data stored?","faq.a2":"In a single SQLite file — data/21day.sqlite3: users, per-day marks and an event log. Nothing extra leaves.",
+      "faq.q3":"Can I build my own 21-day system?","faq.a3":"Yes. There's a separate guide HOWTO_MAKE_SELF_21_SYS.md: a system is described as data in systems.py, and you can design it right in a chat with an LLM.",
+      "faq.q4":"What are the Welles Wilder indicators here?","faq.a4":"They are RSI, ADX and ATR — classic indicators by J. Welles Wilder, applied to a 0/1 sequence of marks. They show momentum, trend strength and pace volatility.",
+      "faq.q5":"Is there a mobile app?","faq.a5":"No — and it isn't needed: the whole interface lives in Telegram. A separate desktop control app (tray) is planned for managing the bot and progress from your desktop.",
+      "band.eyebrow":"Start today","band.h2":"21 days, 3 systems, one bot",
+      "band.p":"Open the bot in Telegram or grab the source and run your own.","band.b2":"★ GitHub",
+      "mock.today":"Today","mock.todaySub":"day 14/21",
+      "mock.action":"Day 14 · <b>short practice</b> <span class=\"em\">· ~5 min</span>",
+      "mock.mark":"✅ Mark day","mock.marked":"✓ Day marked","mock.note":"📝 Note",
+      "mock.tip":"💡 Daily tip","mock.chart":"📊 Chart","mock.progress":"📈 Progress","mock.radar":"🎯 Radar",
+      "mock.chartSub":"last 7 days","mock.tipSub":"offline","mock.radarSub":"targets converge to center",
+      "mock.tipTag":"no API key — a rule, not a model",
+      "mock.tipMsg":"It doesn't matter how yesterday went. Today <b>5 minutes</b> is enough: mark it and keep the rhythm. A streak matters more than inspiration.",
+      "mock.dayNote":"📝 “5 minutes of breathing — feeling fine”",
+      "mock.noteOn":"✅ day {d} marked","mock.noteOff":"day {d} not marked yet",
+      "fin.metric":"metric","fin.val":"val.","fin.scale":"scale",
+      "fin.done":"done","fin.rsi":"RSI progress","fin.adx":"ADX trend","fin.atr":"ATR pace",
+      "fin.pace":"7-day pace","fin.proj":"finish forecast","fin.projVal":"day ~21"
+    }
+  };
+  var lang=(document.documentElement.getAttribute('data-lang')==='en')?'en':'ru';
+  function t(k){return (I18N[lang]&&I18N[lang][k])||(I18N.ru[k]||k);}
+
+  /* ================= тема ================= */
+  var root=document.documentElement;
+  function setTheme(th){
+    root.setAttribute('data-theme',th);
+    try{localStorage.setItem('t21-theme',th);}catch(e){}
+    var sw=document.getElementById('themeBtn'); if(sw) sw.setAttribute('aria-checked',String(th!=='light'));
+    var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content',th==='light'?'#f5f7fc':'#06080f');
+  }
+  setTheme(root.getAttribute('data-theme')==='light'?'light':'dark');
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    setTheme(root.getAttribute('data-theme')==='light'?'dark':'light');
+  });
+
+  /* ================= язык ================= */
+  function applyLang(l){
+    lang=(l==='en')?'en':'ru';
+    root.setAttribute('data-lang',lang);
+    root.setAttribute('lang',lang);
+    try{localStorage.setItem('t21-lang',lang);}catch(e){}
+    document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent=t(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML=t(el.getAttribute('data-i18n-html')); });
+    var b=document.getElementById('langBtn');
+    if(b){ b.querySelector('.ru').classList.toggle('on',lang==='ru'); b.querySelector('.en').classList.toggle('on',lang==='en'); }
+    var cb=document.getElementById('copyBtn');
+    if(cb && !cb.dataset.busy) cb.textContent=t('start.copy');
+    if(window.__mockRender) window.__mockRender();
+  }
+  document.getElementById('langBtn').addEventListener('click',function(){ applyLang(lang==='ru'?'en':'ru'); });
+
   document.getElementById('year').textContent = new Date().getFullYear();
 
   // версия из version.json (кладётся next to лендинга)
@@ -600,23 +857,19 @@
 
   // копирование команды
   document.getElementById('copyBtn').addEventListener('click',function(){
-    var btn=this, t=document.getElementById('cmd').innerText;
-    navigator.clipboard.writeText(t).then(function(){
-      var old=btn.textContent; btn.textContent='Скопировано ✓';
-      setTimeout(function(){btn.textContent=old;},1500);
+    var btn=this, t2=document.getElementById('cmd').innerText;
+    navigator.clipboard.writeText(t2).then(function(){
+      btn.dataset.busy='1'; btn.textContent=t('start.copied');
+      setTimeout(function(){delete btn.dataset.busy;btn.textContent=t('start.copy');},1500);
     });
   });
 
   // табы систем
   document.querySelectorAll('.tab').forEach(function(tab){
     tab.addEventListener('click',function(){
-      document.querySelectorAll('.tab').forEach(function(t){
-        t.setAttribute('aria-selected', t===tab ? 'true':'false');
-      });
+      document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', x===tab?'true':'false'); });
       var i=tab.getAttribute('data-tab');
-      document.querySelectorAll('.panel').forEach(function(p){
-        p.classList.toggle('show', p.getAttribute('data-panel')===i);
-      });
+      document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('show', p.getAttribute('data-panel')===i); });
     });
   });
 
@@ -625,10 +878,7 @@
   function runCount(el){
     if(el.dataset.done)return; el.dataset.done='1';
     var target=+el.getAttribute('data-count'), n=0, step=Math.max(1,Math.round(target/28));
-    var timer=setInterval(function(){
-      n+=step; if(n>=target){n=target;clearInterval(timer);}
-      el.textContent=n;
-    },32);
+    var timer=setInterval(function(){ n+=step; if(n>=target){n=target;clearInterval(timer);} el.textContent=n; },32);
   }
 
   // появление при скролле + счётчики
@@ -654,7 +904,7 @@
     var open=links.style.display==='flex';
     links.style.display=open?'':'flex';
     if(!open){
-      links.style.cssText='display:flex;position:absolute;top:var(--nav-h);left:0;right:0;flex-direction:column;gap:0;background:rgba(6,8,15,.98);border-bottom:1px solid var(--line);padding:8px 24px 16px';
+      links.style.cssText='display:flex;position:absolute;top:var(--nav-h);left:0;right:0;flex-direction:column;gap:0;background:var(--nav-solid);border-bottom:1px solid var(--line);padding:8px 24px 16px';
       links.querySelectorAll('a').forEach(function(a){a.style.padding='12px 0';});
       links.addEventListener('click',function(){links.removeAttribute('style');links.style.display='';});
     }
@@ -697,10 +947,12 @@
       b.addEventListener('click',function(){go(parseInt(b.getAttribute('data-go'),10));});
       b.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go(parseInt(b.getAttribute('data-go'),10));} });
     });
-    go(0);
+    // диплинк: index.html#s5 — открыть нужный экран бота
+    var hm=/^#s(\d+)$/.exec(location.hash);
+    go(hm?Math.min(screens.length-1,Math.max(0,parseInt(hm[1],10)-1)):0);
 
     /* ---------- «Отметить день»: живой пересчёт ---------- */
-    var marked=false, state={done:14,total:21};
+    var marked=false, state={done:14,total:21}, noted=false;
     var el={
       day:document.getElementById('phoneDay'),
       mark:document.getElementById('markBtn'),
@@ -708,49 +960,52 @@
       doneBar:document.getElementById('doneBar'),
       rsi:document.getElementById('rsiVal'), rsiBar:document.getElementById('rsiBar'),
       adx:document.getElementById('adxVal'), adxBar:document.getElementById('adxBar'),
-      atr:document.getElementById('atrVal'),
       pace:document.getElementById('paceVal'), paceBar:document.getElementById('paceBar'),
       proj:document.getElementById('projVal'), projBar:document.getElementById('projBar'),
       note:document.getElementById('chartNote'),
       dayNote:document.getElementById('dayNote'),
-      noteBtn:document.getElementById('noteBtn')
+      noteBtn:document.getElementById('noteBtn'),
+      radarNote:document.getElementById('radarNote')
     };
     var lastCol=document.querySelector('#miniChart .col:last-child');
-    var noted=false;
     function setBar(bar,v){ if(bar) bar.style.width=Math.max(2,Math.min(100,v))+'%'; }
     function render(){
       var done=state.done, total=state.total, pct=Math.round(done/total*100);
       el.doneNow.textContent=done+'/'+total+' · '+pct+'%';
       setBar(el.doneBar,pct);
-      // показатели слегка растут/падают при отметке — для живого ощущения
       var rsi=marked?66.0:58.0, adx=marked?48.6:41.2, pace=marked?86:71;
       el.rsi.textContent=rsi.toFixed(1); setBar(el.rsiBar,rsi);
       el.adx.textContent=adx.toFixed(1); setBar(el.adxBar,adx);
       el.pace.textContent=pace+'%'; setBar(el.paceBar,pace);
       var proj=marked?21:23;
-      el.proj.textContent='день ~'+proj; setBar(el.projBar,Math.round(total/proj*100));
-      el.day.textContent='день '+done+'/'+total;
-      el.mark.textContent=marked?'✓ День отмечен':'✅ Отметить день';
+      el.proj.textContent=(lang==='en'?'day ~':'день ~')+proj; setBar(el.projBar,Math.round(total/proj*100));
+      el.day.textContent=(lang==='en'?'day ':'день ')+done+'/'+total;
+      el.mark.textContent=marked?t('mock.marked'):t('mock.mark');
       el.mark.classList.toggle('on',marked);
       if(lastCol) lastCol.classList.toggle('hit',marked);
-      if(el.note) el.note.textContent=marked?'✅ день '+done+' отмечен':'день '+done+' пока не отмечен';
-      if(el.dayNote){
-        el.dayNote.hidden=!noted;
-        if(noted) el.dayNote.textContent='📝 «5 минут дыхания — самочувствие ок»';
-      }
+      if(el.note) el.note.textContent=(marked?t('mock.noteOn'):t('mock.noteOff')).replace('{d}',done);
+      if(el.dayNote){ el.dayNote.hidden=!noted; if(noted) el.dayNote.textContent=t('mock.dayNote'); }
       if(el.noteBtn) el.noteBtn.classList.toggle('on',noted);
+      if(el.radarNote){
+        var hits=Math.min(5,Math.round(done/total*5)), left=total-done;
+        el.radarNote.textContent=(lang==='en')
+          ? ('targets '+hits+'/5 · '+left+' days to finish')
+          : ('цели: '+hits+'/5 · до финиша '+left+' дн.');
+      }
     }
-    function toggle(){
-      marked=!marked; state.done=marked?15:14; render();
-    }
+    function toggle(){ marked=!marked; state.done=marked?15:14; render(); }
     el.mark.addEventListener('click',toggle);
     el.mark.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
     if(el.noteBtn){
       el.noteBtn.addEventListener('click',function(){noted=!noted;render();});
       el.noteBtn.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();noted=!noted;render();} });
     }
+    window.__mockRender=render;
     render();
   })();
+
+  // применяем сохранённый/текущий язык
+  applyLang(lang);
 </script>
 </body>
 </html>
