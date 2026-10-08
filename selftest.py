@@ -155,6 +155,25 @@ bot.on_callback({"id": "1", "data": "dev:clear",
 assert not bot.CHAT_HISTORY.get(ADMIN)
 print("Админка и чат с LLM: ок")
 
+# 10. Markdown → HTML (рендер ответов LLM).
+from md import to_html  # noqa: E402
+
+md_out = to_html(
+    "# Заголовок\n"
+    "**жирный** и *курсив*, `код`, ~~нет~~, [ссылка](https://example.com)\n"
+    "- пункт списка\n"
+    "```python\nprint('hi')\n```\n")
+assert "<b>Заголовок</b>" in md_out, md_out
+assert "<b>жирный</b>" in md_out and "<i>курсив</i>" in md_out, md_out
+assert "<code>код</code>" in md_out and "<s>нет</s>" in md_out, md_out
+assert '<a href="https://example.com">ссылка</a>' in md_out, md_out
+assert "• пункт списка" in md_out, md_out
+assert "<pre>" in md_out and "print('hi')" in md_out, md_out
+assert "**" not in md_out and "`" not in md_out, md_out
+# Экранирование не превращается в теги.
+assert "<script>" not in to_html("<script>alert(1)</script>")
+print("Markdown→HTML: ок")
+
 print("БД:", bot.DB.path)
 print("Все офлайн-тесты экранов прошли.")
 print("Пример индикаторов:\n")

@@ -28,6 +28,7 @@ from graph import render as render_chart
 from indicators import compute, indicator_block
 from llm import ask as llm_ask
 from llm import chat_dev as llm_chat_dev
+from md import to_html as md_to_html
 from radar import render_radar
 from storage import Storage
 from systems import SYSTEMS, SYSTEM_ORDER, TOTAL_DAYS
@@ -98,6 +99,18 @@ def send(chat_id: int, text: str, keyboard=None):
     if keyboard is not None:
         params["reply_markup"] = json.dumps(keyboard, ensure_ascii=False)
     return _call("sendMessage", params)
+
+
+def send_md(chat_id: int, prefix_html: str, markdown: str, keyboard=None):
+    """Отправить текст LLM с рендером Markdown→HTML и безопасным откатом.
+
+    Если Telegram не принял разметку — шлём тот же текст как есть (экранируя),
+    чтобы ответ точно дошёл.
+    """
+    resp = send(chat_id, prefix_html + md_to_html(markdown), keyboard)
+    if not resp.get("ok"):
+        resp = send(chat_id, prefix_html + _esc(markdown), keyboard)
+    return resp
 
 
 def edit(chat_id: int, message_id: int, text: str, keyboard=None):
@@ -760,8 +773,8 @@ def on_callback(cb: dict):
         advice, used = llm_ask(system, "Как не сорваться и выполнить сегодняшний день?",
                                f"День {d}: {day.action}")
         tag = "LLM" if used else "офлайн-режим (без API-ключа)"
-        return send(chat_id, f"💡 <b>Совет</b> <i>({tag})</i>\n\n{_esc(advice)}",
-                    kb_back_menu())
+        return send_md(chat_id, f"💡 <b>Совет</b> <i>({tag})</i>\n\n", advice,
+                       kb_back_menu())
 
 
 DEV_ON: set[int] = set()  # админы, у кого включён чат-режим с LLM
@@ -880,7 +893,7 @@ def on_message(msg: dict):
         hist.append({"role": "assistant", "content": answer})
         del hist[:-12]
         tag = "LLM" if used else "ошибка/офлайн"
-        return send(chat_id, f"🤖 <i>({tag})</i>\n{_esc(answer)}", kb_dev())
+        return send_md(chat_id, f"🤖 <i>({tag})</i>\n", answer, kb_dev())
     if not system:
         return screen_systems(chat_id)
     return send(chat_id, "Не понял. Открой /menu или /help.", kb_main(system))
