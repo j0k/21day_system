@@ -82,11 +82,13 @@ for style in ("trader", "styled"):
                      "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
     assert any(m == "sendPhoto" for m, _ in CAPTURED), style
 
-# 8. Совет в офлайн-режиме (ключ не задан).
+# 8. Совет: работает в любом режиме (LLM при ключе, иначе — офлайн).
 CAPTURED.clear()
 bot.on_callback({"id": "1", "data": "advise",
                  "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
-assert any("офлайн" in t for _, t in CAPTURED), CAPTURED[-1]
+tag = "LLM" if bot.config.LLM_ENABLED else "офлайн"
+assert any(tag in t for _, t in CAPTURED), (tag, CAPTURED[-1])
+print("Режим советника:", "LLM" if bot.config.LLM_ENABLED else "офлайн")
 
 print("БД:", bot.DB.path)
 print("Все офлайн-тесты экранов прошли.")
