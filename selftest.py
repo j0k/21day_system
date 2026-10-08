@@ -105,6 +105,56 @@ tag = "LLM" if bot.config.LLM_ENABLED else "офлайн"
 assert any(tag in t for _, t in CAPTURED), (tag, CAPTURED[-1])
 print("Режим советника:", "LLM" if bot.config.LLM_ENABLED else "офлайн")
 
+# 9. Админка и диалог с LLM (доступно только администратору).
+ADMIN = min(bot.config.ADMIN_IDS)
+OUTSIDER = 777001
+if OUTSIDER in bot.config.ADMIN_IDS:
+    OUTSIDER = 777002
+bot.DB.touch(ADMIN, ADMIN, "Admin", "admin")
+bot.DB.set_system(ADMIN, "skills")
+
+# 9a. Не-админу админка запрещена.
+CAPTURED.clear()
+bot.on_message({"chat": {"id": OUTSIDER}, "from": {"id": OUTSIDER},
+                "text": "/admin"})
+assert any("только для администратор" in t for _, t in CAPTURED), CAPTURED[-1]
+
+# 9b. Админ открывает панель, разделы.
+CAPTURED.clear()
+bot.on_message({"chat": {"id": ADMIN}, "from": {"id": ADMIN}, "text": "/admin"})
+assert any("Админ-панель" in t for _, t in CAPTURED), CAPTURED[-1]
+for data in ("admin", "admin:users:0", "admin:log", "admin:find"):
+    CAPTURED.clear()
+    bot.on_callback({"id": "1", "data": data,
+                     "message": {"chat": {"id": ADMIN}, "message_id": 1},
+                     "from": {"id": ADMIN}})
+    assert CAPTURED, data
+
+# 9c. Поиск пользователя по имени.
+bot.on_message({"chat": {"id": ADMIN}, "from": {"id": ADMIN}, "text": "Юра"})
+found = bot.DB.get_user_by_name("Юра")
+assert found, "поиск по имени не сработал"
+
+# 9d. Сводка хранилища.
+over = bot.DB.overview()
+assert over["users"] >= 1 and "marks" in over
+
+# 9e. Диалог с LLM: /dev включает режим, обычный текст уходит в чат.
+CAPTURED.clear()
+bot.on_message({"chat": {"id": ADMIN}, "from": {"id": ADMIN}, "text": "/dev"})
+assert any("Чат с LLM" in t for _, t in CAPTURED), CAPTURED[-1]
+CAPTURED.clear()
+bot.on_message({"chat": {"id": ADMIN}, "from": {"id": ADMIN},
+                "text": "Предложи, что улучшить в боте"})
+assert any("🤖" in t for _, t in CAPTURED), CAPTURED[-1]
+assert bot.CHAT_HISTORY.get(ADMIN), "история чата пуста"
+# очистка истории
+bot.on_callback({"id": "1", "data": "dev:clear",
+                 "message": {"chat": {"id": ADMIN}, "message_id": 1},
+                 "from": {"id": ADMIN}})
+assert not bot.CHAT_HISTORY.get(ADMIN)
+print("Админка и чат с LLM: ок")
+
 print("БД:", bot.DB.path)
 print("Все офлайн-тесты экранов прошли.")
 print("Пример индикаторов:\n")

@@ -91,6 +91,7 @@ class User:
     system_id: str | None
     started_at: str | None
     is_public: bool = False
+    last_seen: str | None = None
 
 
 class Storage:
@@ -152,7 +153,7 @@ class Storage:
             return None
         return User(row["user_id"], row["chat_id"], row["first_name"] or "",
                     row["username"] or "", row["system_id"], row["started_at"],
-                    bool(row["is_public"]))
+                    bool(row["is_public"]), row["last_seen"])
 
     def set_system(self, user_id: int, system_id: str) -> None:
         if system_id not in SYSTEMS:
@@ -314,6 +315,96 @@ class Storage:
         for i, row in enumerate(out, 1):
             row["rank"] = i
         return out[:limit]
+
+    # ----------------------------------------------------------- админка
+    def overview(self) -> dict:
+        """Сводка по всей базе для админ-панели."""
+        with self._lock:
+            users = self._db.execute(
+                "SELECT COUNT(*) AS n FROM users").fetchone()["n"]
+            public = self._db.execute(
+                "SELECT COUNT(*) AS n FROM users WHERE is_public=1"
+            ).fetchone()["n"]
+            marks = self._db.execute(
+                "SELECT COUNT(*) AS n FROM progress WHERE done=1"
+            ).fetchone()["n"]
+            logs = self._db.execute(
+                "SELECT COUNT(*) AS n FROM log").fetchone()["n"]
+            by_system = {r["system_id"]: r["n"] for r in self._db.execute(
+                "SELECT system_id, COUNT(*) AS n FROM progress WHERE done=1"
+                " GROUP BY system_id")}
+            selected = {r["system_id"]: r["n"] for r in self._db.execute(
+                "SELECT system_id, COUNT(*) AS n FROM users"
+                " WHERE system_id IS NOT NULL GROUP BY system_id")}
+        return {"users": users, "public": public, "marks": marks,
+                "logs": logs, "by_system": by_system, "selected": selected}
+
+    def all_users(self, limit: int = 50, offset: int = 0) -> list[dict]:
+        """Список пользователей с прогрессом по выбранной системе."""
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT * FROM users ORDER BY last_seen DESC LIMIT ? OFFSET ?",
+                (limit, offset)).fetchall()
+        out = []
+        for r in rows:
+            sid = r["system_id"]
+            done = 0
+            if sid in SYSTEMS:
+                series = self.completion_series(r["user_id"], sid)
+                done = sum(series)
+            out.append({
+                "user_id": r["user_id"], "chat_id": r["chat_id"],
+                "first_name": r["first_name"] or "", "username": r["username"] or "",
+                "system_id": sid, "is_public": bool(r["is_public"]),
+                "started_at": r["started_at"] or "",
+                "last_seen": r["last_seen"] or "", "done": done,
+            })
+        return out
+
+    def get_user_by_name(self, query: str) -> list[User]:
+        """Найти пользователя по username, имени или id."""
+        q = query.strip().lstrip("@")
+        with self._lock:
+            if q.isdigit():
+                rows = self._db.execute(
+                    "SELECT * FROM users WHERE user_id=? OR chat_id=?",
+                    (int(q), int(q))).fetchall()
+            else:
+                rows = self._db.execute(
+                    "SELECT * FROM users WHERE username LIKE ?"
+                    " OR first_name LIKE ? ORDER BY last_seen DESC LIMIT 10",
+                    (q, f"%{q}%")).fetchall()
+        return [User(r["user_id"], r["chat_id"], r["first_name"] or "",
+                     r["username"] or "", r["system_id"], r["started_at"],
+                     bool(r["is_public"]), r["last_seen"]) for r in rows]
+
+    def delete_user(self, user_id: int) -> None:
+        with self._lock:
+            self._db.execute("DELETE FROM progress WHERE user_id=?", (user_id,))
+            self._db.execute("DELETE FROM users WHERE user_id=?", (user_id,))
+            self._db.commit()
+        self.log(user_id, "admin_delete_user", "")
+
+    def reset_progress(self, user_id: int, system_id: str | None = None) -> int:
+        with self._lock:
+            if system_id:
+                cur = self._db.execute(
+                    "DELETE FROM progress WHERE user_id=? AND system_id=?",
+                    (user_id, system_id))
+            else:
+                cur = self._db.execute(
+                    "DELETE FROM progress WHERE user_id=?", (user_id,))
+            self._db.commit()
+        n = cur.rowcount
+        self.log(user_id, "admin_reset", system_id or "*")
+        return n
+
+    def recent_log(self, limit: int = 20) -> list[dict]:
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT ts, user_id, event, detail FROM log"
+                " ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        return [dict(r) for r in rows]
 
     # --------------------------------------------------------------- log
     def log(self, user_id: int, event: str, detail: str = "") -> None:

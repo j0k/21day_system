@@ -73,5 +73,15 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR / "data")))
 # Все результаты — в одном файле SQLite.
 DB_FILE = DATA_DIR / "21day.sqlite3"
 
+# --- Администраторы -------------------------------------------------------
+# Список Telegram user_id через запятую (env ADMIN_IDS). Админам доступна
+# команда /admin. По умолчанию — владелец проекта.
+ADMIN_IDS: set[int] = {
+    int(x) for x in _first_env("ADMIN_IDS",
+                               default="52160369,432922856")
+    .replace(";", ",").split(",") if x.strip().isdigit()
+}
+
+
 # Бот умеет работать и без API-ключа.
 LLM_ENABLED: bool = bool(OPENAI_API_KEY)
