@@ -87,8 +87,16 @@ def adx(series: list[float], period: int = 14) -> float:
 
 
 def compute(series: list[int], period: int = 7) -> dict:
-    """Полный набор индикаторов по ряду 0/1 (дни 1..21)."""
-    # «Эквити»: накопленное число выполненных дней.
+    """Полный набор индикаторов по ряду 0/1 (дни 1..21).
+
+    Индикаторы считаются по САМОМУ РЯДУ отметок (0/1), а не по накопленному
+    «эквити»: эквити только растёт, поэтому RSI/ADX по нему всегда давали 100.
+    На ряде 0/1 пропуск дня — это «убыток», серия отметок — «рост», и
+    индикаторы становятся осмысленными.
+    """
+    marks = [float(v) for v in series]
+
+    # «Эквити»: накопленное число выполненных дней (для графика/наглядности).
     equity: list[float] = []
     acc = 0.0
     for v in series:
@@ -97,9 +105,9 @@ def compute(series: list[int], period: int = 7) -> dict:
     done = int(sum(series))
     total = len(series)
 
-    r = rsi(equity, period)
-    a = adx(equity, period)
-    v = atr(equity, period)
+    r = rsi(marks, period)
+    a = adx(marks, period)
+    v = atr(marks, period)
 
     recent = series[-7:] if series else []
     pace = (sum(recent) / len(recent)) if recent else 0.0
