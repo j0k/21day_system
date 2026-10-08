@@ -1,5 +1,7 @@
 # 21day_system
 
+![21day_system icon](icon.svg)
+
 > Telegram-бот трёх 21-дневных систем микро-практики: **навыки**, **режим дня** и **сон**.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
