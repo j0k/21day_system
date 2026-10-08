@@ -115,7 +115,35 @@ def kb_systems():
     for sid in SYSTEM_ORDER:
         s = SYSTEMS[sid]
         rows.append([{"text": f"{s.emoji}  {s.title}", "callback_data": f"sys:{sid}"}])
+    rows.append([{"text": "👥 Участники", "callback_data": "users"},
+                 {"text": "🏆 Лидеры", "callback_data": "board"}])
+    rows.append([{"text": "🙍 Профиль", "callback_data": "profile"}])
     return {"inline_keyboard": rows}
+
+
+def kb_board(system_id: str | None = None):
+    def tab(sid, label):
+        mark = "· " if system_id == sid else ""
+        return {"text": f"{mark}{label}", "callback_data": f"board:{sid}"}
+    return {"inline_keyboard": [
+        [tab("skills", "🧠 микро-практика"),
+         tab("discipline", "📅 дисциплина"),
+         tab("sleep", "🌙 сон")],
+        [{"text": "🌐 Все системы", "callback_data": "board:all"},
+         {"text": "⬅️ К выбору", "callback_data": "systems"}],
+    ]}
+
+
+def kb_profile(user) -> dict:
+    label = ("🔒 Сделать приватным" if user.is_public
+             else "🌐 Сделать публичным")
+    return {"inline_keyboard": [
+        [{"text": label,
+          "callback_data": "privacy:" + ("0" if user.is_public else "1")}],
+        [{"text": "👥 Участники", "callback_data": "users"},
+         {"text": "🏆 Лидеры", "callback_data": "board"}],
+        [{"text": "🏠 Меню", "callback_data": "menu"}],
+    ]}
 
 
 def kb_main(system):
@@ -129,6 +157,8 @@ def kb_main(system):
          {"text": "🎨 Стиль", "callback_data": "chart:styled"}],
         [{"text": "📡 Радар TCAS", "callback_data": "chart:radar"}],
         [{"text": "💡 Совет", "callback_data": "advise"},
+         {"text": "🙍 Профиль", "callback_data": "profile"}],
+        [{"text": "🏆 Лидеры", "callback_data": "board"},
          {"text": "🔀 Сменить систему", "callback_data": "systems"}],
     ]}
 
@@ -170,15 +200,104 @@ def _user_and_system(chat_id: int):
 
 
 def screen_systems(chat_id: int, message_id: int | None = None):
+    n_users = DB.participants()
+    board = DB.leaderboard(limit=3)
     text = ("<b>21day_system</b> — три системы микро-практики.\n"
             "Выбери ту, которую хочешь пройти. Выбор можно сменить в любой момент.\n\n"
             + "\n".join(f"{SYSTEMS[s].emoji} <b>{_esc(SYSTEMS[s].title)}</b>\n"
                         f"    <i>{_esc(SYSTEMS[s].subtitle)}</i>"
                         for s in SYSTEM_ORDER))
+    text += f"\n\n👥 Участников: <b>{n_users}</b>"
+    if board:
+        text += "\n🏆 Лидеры:\n" + "\n".join(_board_line(r) for r in board)
     if message_id:
         edit(chat_id, message_id, text, kb_systems())
     else:
         send(chat_id, text, kb_systems())
+
+
+def _board_line(r: dict) -> str:
+    medal = {1: "🥇", 2: "🥈", 3: "🥉"}.get(r["rank"], f"{r['rank']}.")
+    sys_emoji = SYSTEMS[r["system_id"]].emoji if r["system_id"] in SYSTEMS else ""
+    return (f"{medal} <b>{_esc(r['name'])}</b> — {r['done']}/{TOTAL_DAYS} "
+            f"({r['pct']}%) {sys_emoji} · серия {r['streak']}")
+
+
+def screen_users(chat_id: int, message_id: int | None = None):
+    n = DB.participants()
+    board = DB.leaderboard(limit=20)
+    # сколько людей идут каждую систему
+    counts = {sid: 0 for sid in SYSTEM_ORDER}
+    for r in board:
+        if r["system_id"] in counts:
+            counts[r["system_id"]] += 1
+    text = [f"👥 <b>Участники</b>\n",
+            f"Всего писали боту: <b>{n}</b>",
+            "Активных (есть отметки): <b>%d</b>\n" % len(DB.leaderboard(limit=999))]
+    for sid in SYSTEM_ORDER:
+        s = SYSTEMS[sid]
+        text.append(f"{s.emoji} <b>{_esc(s.title)}</b> — {counts[sid]}")
+    text.append("\n🏆 Топ:\n" + "\n".join(_board_line(r) for r in board[:10])
+                if board else "\nПока никто не отметил ни одного дня.")
+    body = "\n".join(text)
+    if message_id:
+        edit(chat_id, message_id, body, kb_systems())
+    else:
+        send(chat_id, body, kb_systems())
+
+
+def screen_board(chat_id: int, system_id: str | None = None,
+                 message_id: int | None = None):
+    sid = system_id if system_id in SYSTEMS else None
+    rows = DB.leaderboard(sid, limit=20)
+    title = ("🏆 <b>Лидеры</b> — все системы" if sid is None
+             else f"🏆 <b>Лидеры</b> — {SYSTEMS[sid].emoji} "
+                  f"{_esc(SYSTEMS[sid].title)}")
+    if not rows:
+        body = f"{title}\n\nПока никто не отметил ни одного дня. Стань первым!"
+    else:
+        lines = [f"{r['rank']}. <b>{_esc(r['name'])}</b> — {r['done']}/{TOTAL_DAYS} "
+                 f"({r['pct']}%) · серия {r['streak']} · {r['minutes']} мин"
+                 for r in rows]
+        body = title + "\n\n" + "\n".join(lines)
+    if message_id:
+        edit(chat_id, message_id, body, kb_board(sid))
+    else:
+        send(chat_id, body, kb_board(sid))
+
+
+def screen_profile(chat_id: int, message_id: int | None = None):
+    user = DB.get_user(chat_id)
+    if not user:
+        return screen_systems(chat_id, message_id)
+    system = SYSTEMS[user.system_id] if user.system_id in SYSTEMS else None
+    vis = ("🌐 <b>Публичный</b> — имя видно в таблице лидеров"
+           if user.is_public else
+           "🔒 <b>Приватный</b> — в лидерборде показывается как "
+           "<b>Private User</b>")
+    shown = (user.first_name or (user.username and "@" + user.username)
+             or f"id{user.user_id}")
+    name_line = (f"Отображаемое имя: <b>{_esc(shown)}</b>" if user.is_public
+                 else "Отображаемое имя: <b>Private User</b>")
+    sys_line = (f"{system.emoji} {_esc(system.title)}" if system
+                else "система не выбрана")
+    rank_line = ""
+    rows = DB.leaderboard()
+    mine = next((r for r in rows if r["user_id"] == user.user_id), None)
+    if mine:
+        rank_line = (f"\n🏆 Место в лидерах: <b>#{mine['rank']}</b> "
+                     f"({mine['done']}/{TOTAL_DAYS})")
+    text = (f"🙍 <b>Профиль</b>\n\n"
+            f"{name_line}\n"
+            f"Видимость: {vis}\n"
+            f"Система: {sys_line}"
+            f"{rank_line}\n\n"
+            f"<i>Если ты ещё не сделал профиль публичным, в таблице лидеров "
+            f"ты значишься как Private User.</i>")
+    if message_id:
+        edit(chat_id, message_id, text, kb_profile(user))
+    else:
+        send(chat_id, text, kb_profile(user))
 
 
 def screen_menu(chat_id: int, message_id: int | None = None):
@@ -311,6 +430,19 @@ def on_callback(cb: dict):
         return screen_today(chat_id, message_id)
     if data == "progress":
         return screen_progress(chat_id, message_id)
+    if data == "users":
+        return screen_users(chat_id, message_id)
+    if data == "profile":
+        return screen_profile(chat_id, message_id)
+    if data.startswith("privacy:"):
+        flag = data.split(":", 1)[1] == "1"
+        DB.set_public(chat_id, flag)
+        return screen_profile(chat_id, message_id)
+    if data.startswith("board"):
+        parts = data.split(":", 1)
+        sid = parts[1] if len(parts) > 1 else None
+        return screen_board(chat_id, None if sid in (None, "all") else sid,
+                            message_id)
     if data.startswith("week:"):
         return screen_week(chat_id, int(data.split(":", 1)[1]), message_id)
     if data.startswith("chart:"):
@@ -388,6 +520,12 @@ def on_message(msg: dict):
         return send_chart(chat_id, style)
     if text.startswith("/systems"):
         return screen_systems(chat_id)
+    if text.startswith("/users"):
+        return screen_users(chat_id)
+    if text.startswith("/board") or text.startswith("/leaders"):
+        return screen_board(chat_id)
+    if text.startswith("/profile"):
+        return screen_profile(chat_id)
     if text.startswith("/cancel"):
         PENDING.pop(chat_id, None)
         return send(chat_id, "Ок, отменено.", kb_back_menu())
@@ -399,6 +537,9 @@ def on_message(msg: dict):
                     "/progress — прогресс и индикаторы\n"
                     "/chart [styled|radar] — график прогресса\n"
                     "/systems — сменить систему\n"
+                    "/users — участники\n"
+                    "/board — таблица лидеров\n"
+                    "/profile — профиль и видимость (публичный/приватный)\n"
                     "/cancel — отменить ввод\n\n"
                     "Днём можно отметить выполнение кнопкой и добавить заметку.\n"
                     "Проект: https://github.com/j0k/21day_system",

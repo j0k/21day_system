@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name  TEXT,
     username    TEXT,
     system_id   TEXT,
+    is_public   INTEGER NOT NULL DEFAULT 0,
     started_at  TEXT,
     last_seen   TEXT
 );
@@ -52,6 +53,35 @@ def _now() -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def _streaks(series: list[int]) -> tuple[int, int]:
+    """(текущая серия, лучшая серия) по ряду 0/1."""
+    cur = best = 0
+    for v in series:
+        cur = cur + 1 if v else 0
+        best = max(best, cur)
+    return cur, best
+
+
+def _trailing_streak(series: list[int]) -> int:
+    """Дней подряд до последнего отмеченного дня (будущие пропуски не в счёт).
+
+    В лидерборде важно, держит ли человек ритм сейчас: пустые дни впереди
+    не должны обнулять серию.
+    """
+    considered = [i for i, v in enumerate(series) if v]
+    if not considered:
+        return 0
+    last = max(considered)
+    n = 0
+    for v in reversed(series[:last + 1]):
+        if v:
+            n += 1
+        else:
+            break
+    return n
+
+
+
 @dataclass
 class User:
     user_id: int
@@ -60,6 +90,7 @@ class User:
     username: str
     system_id: str | None
     started_at: str | None
+    is_public: bool = False
 
 
 class Storage:
@@ -79,6 +110,13 @@ class Storage:
             except sqlite3.DatabaseError:
                 pass
             self._db.executescript(_SCHEMA)
+            # миграция: колонка is_public появилась позже — добавим при нужде
+            cols = {r["name"] for r in
+                    self._db.execute("PRAGMA table_info(users)").fetchall()}
+            if "is_public" not in cols:
+                self._db.execute(
+                    "ALTER TABLE users ADD COLUMN is_public INTEGER"
+                    " NOT NULL DEFAULT 0")
             self._db.commit()
 
     # ------------------------------------------------------------- users
@@ -95,10 +133,14 @@ class Storage:
                     (user_id, chat_id, first_name, username, _now(), _now()))
                 self._db.commit()
             else:
+                # не затираем сохранённое имя/username пустыми значениями
                 self._db.execute(
-                    "UPDATE users SET chat_id=?, first_name=?, username=?,"
+                    "UPDATE users SET chat_id=?,"
+                    " first_name=CASE WHEN ?<>'' THEN ? ELSE first_name END,"
+                    " username=CASE WHEN ?<>'' THEN ? ELSE username END,"
                     " last_seen=? WHERE user_id=?",
-                    (chat_id, first_name, username, _now(), user_id))
+                    (chat_id, first_name, first_name, username, username,
+                     _now(), user_id))
                 self._db.commit()
         return self.get_user(user_id)
 
@@ -109,7 +151,8 @@ class Storage:
         if row is None:
             return None
         return User(row["user_id"], row["chat_id"], row["first_name"] or "",
-                    row["username"] or "", row["system_id"], row["started_at"])
+                    row["username"] or "", row["system_id"], row["started_at"],
+                    bool(row["is_public"]))
 
     def set_system(self, user_id: int, system_id: str) -> None:
         if system_id not in SYSTEMS:
@@ -120,6 +163,15 @@ class Storage:
                 (system_id, _now(), user_id))
             self._db.commit()
         self.log(user_id, "select_system", system_id)
+
+    def set_public(self, user_id: int, is_public: bool) -> None:
+        """Публичный профиль: показывать имя в таблице лидеров."""
+        with self._lock:
+            self._db.execute(
+                "UPDATE users SET is_public=? WHERE user_id=?",
+                (int(is_public), user_id))
+            self._db.commit()
+        self.log(user_id, "set_public", "1" if is_public else "0")
 
     # ---------------------------------------------------------- progress
     def set_done(self, user_id: int, system_id: str, day: int,
@@ -183,6 +235,85 @@ class Storage:
         except Exception:  # noqa: BLE001
             pass
         return out
+
+    # ------------------------------------------------------------ лидеры
+    def participants(self) -> int:
+        """Сколько всего человек писали боту."""
+        with self._lock:
+            return self._db.execute(
+                "SELECT COUNT(*) AS n FROM users").fetchone()["n"]
+
+    def leaderboard(self, system_id: str | None = None, limit: int = 10
+                    ) -> list[dict]:
+        """Таблица лидеров.
+
+        Ранжируем по числу выполненных дней выбранной системы (или лучшей из
+        трёх, если система не задана), затем по текущей серии и по сумме
+        минут. Возвращаем ``[{name, username, user_id, system_id, done, pct,
+        streak, minutes, rank}]``.
+        """
+        with self._lock:
+            users = self._db.execute(
+                "SELECT user_id, first_name, username, system_id, is_public"
+                " FROM users").fetchall()
+            rows = self._db.execute(
+                "SELECT user_id, system_id, COUNT(*) AS n,"
+                " COALESCE(SUM(minutes),0) AS mins FROM progress"
+                " WHERE done=1 GROUP BY user_id, system_id").fetchall()
+            series_rows = self._db.execute(
+                "SELECT user_id, system_id, day, done FROM progress"
+                " ORDER BY user_id, system_id, day").fetchall()
+
+        # серии: собрать ряды 0/1 по каждому (пользователь, система)
+        marks: dict[tuple[int, str], dict[int, int]] = {}
+        for r in series_rows:
+            marks.setdefault((r["user_id"], r["system_id"]), {})[r["day"]] = \
+                1 if r["done"] else 0
+
+        agg: dict[tuple[int, str], dict] = {}
+        for r in rows:
+            agg[(r["user_id"], r["system_id"])] = {
+                "done": r["n"], "minutes": r["mins"]}
+
+        out = []
+        for u in users:
+            best = None
+            candidates = ([system_id] if system_id in SYSTEMS
+                          else list(SYSTEMS.keys()))
+            for sid in candidates:
+                key = (u["user_id"], sid)
+                info = agg.get(key)
+                if not info:
+                    continue
+                series = [marks.get(key, {}).get(d, 0)
+                          for d in range(1, TOTAL_DAYS + 1)]
+                _cur, best_streak = _streaks(series)
+                streak = _trailing_streak(series)
+                cand = {"system_id": sid, "done": info["done"],
+                        "minutes": info["minutes"], "streak": streak,
+                        "best_streak": best_streak,
+                        "pct": round(100 * info["done"] / TOTAL_DAYS)}
+                if best is None or (cand["done"], cand["streak"],
+                                    cand["minutes"]) > (
+                                    best["done"], best["streak"],
+                                    best["minutes"]):
+                    best = cand
+            if best is None:
+                continue
+            public = bool(u["is_public"])
+            if public:
+                name = (u["first_name"] or (u["username"] and "@" + u["username"])
+                        or f"id{u['user_id']}")
+            else:
+                name = "Private User"
+            out.append({"user_id": u["user_id"], "name": name,
+                        "username": u["username"] or "", "public": public,
+                        **best})
+        out.sort(key=lambda x: (-x["done"], -x["streak"], -x["minutes"],
+                                x["name"].lower()))
+        for i, row in enumerate(out, 1):
+            row["rank"] = i
+        return out[:limit]
 
     # --------------------------------------------------------------- log
     def log(self, user_id: int, event: str, detail: str = "") -> None:

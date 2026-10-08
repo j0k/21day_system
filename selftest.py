@@ -65,11 +65,26 @@ bot.on_message({"chat": {"id": CHAT}, "from": {}, "text": "мысль дня"})
 assert bot.DB.get_progress(CHAT, "skills")[5]["note"] == "мысль дня"
 
 # 5. Экраны прогресса, недель, меню.
-for data in ("progress", "week:1", "week:2", "week:3", "menu", "today"):
+for data in ("progress", "week:1", "week:2", "week:3", "menu", "today",
+             "users", "board", "board:skills", "board:all", "profile"):
     CAPTURED.clear()
     bot.on_callback({"id": "1", "data": data,
                      "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
     assert CAPTURED, data
+
+# 5b. Профиль: по умолчанию приватный -> в лидерах "Private User"; затем публичный.
+u = bot.DB.get_user(CHAT)
+assert u.is_public is False, u
+bot.on_callback({"id": "1", "data": "privacy:1",
+                 "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
+assert bot.DB.get_user(CHAT).is_public is True
+boards = bot.DB.leaderboard("skills", limit=5)
+assert boards and boards[0]["public"] is True, boards
+assert boards[0]["name"] == "Юра", boards
+bot.on_callback({"id": "1", "data": "privacy:0",
+                 "message": {"chat": {"id": CHAT}, "message_id": 1}, "from": {}})
+boards = bot.DB.leaderboard("skills", limit=5)
+assert boards and boards[0]["name"] == "Private User", boards
 
 # 6. Команды.
 for txt in ("/today", "/progress", "/help", "/systems", "/cancel", "/menu"):
